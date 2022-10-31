@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" />
+    <link rel="stylesheet" href="/main.css">
+  </head>
+  <body>
+    <div class="nav-bar">
+      <a href="/" class="logo">visit korea</a>
+      <div class="right">
+      {% if user %}
+        <i class="fas fa-user"></i>
+        <ul class="menu">
+          <li><a href="/">찜한 여행</a></li>
+          <li><a href="/">나의 리뷰</a></li>
+          <li><a href="/">회원 탈퇴</a></li>
+        </ul>
+        <a class="btn" href="/auth/logout">Logout</a>
+      {% else %}
+        <a class="btn" href="/login">Login</a>
+      {% endif %}
+      </div>
+    </div>
+    {% block content %}
+    {% endblock %}
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+      let scrollPrevious = window.pageYOffset;
+      const navbar = document.querySelector('.nav-bar');
+      const ul = navbar.querySelector('ul');
+      const userIcon = navbar.querySelector('i')
+  
+      window.addEventListener('scroll', () => {
+        const scrollCurrent = window.pageYOffset;
+        if (scrollPrevious > scrollCurrent) {
+          navbar.style.top = '0px';
+        } else {
+          navbar.style.top = '-72px';
+        }
+        scrollPrevious = scrollCurrent;
+      });
+
+      userIcon?.addEventListener('mouseover', () => {
+        ul.classList.add('show');
+      });
+      ul?.addEventListener('mouseleave', () => {
+        setTimeout(() => {
+          ul.classList.remove('show');
+        }, 200);
+      });
+    </script>
+    {% block script %}
+    {% endblock %}
+  </body>
+</html>

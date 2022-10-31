@@ -1,0 +1,84 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="register-box">
+    <h4>register</h4>
+    <form>
+      <div class="name-field">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          name="name"
+          class="register-input"
+          placeholder="name"
+          id="name"
+          required
+        />
+      </div>
+      <div class="email-field">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          name="email"
+          class="register-input"
+          placeholder="email"
+          id="email"
+          required
+        />
+      </div>
+      <div class="password-field">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          name="password"
+          class="register-input"
+          placeholder="password"
+          id="password"
+          required
+        />
+      </div>
+      <button type="submit" class="btn submit-btn">가입하기</button>
+    </form>
+    <div class="form-alert"></div>
+  </div>
+  <section class="tasks-container">
+    <p class="loading-text">Loading...</p>
+    <div class="tasks"></div>
+  </section>
+{% endblock %}
+{% block script %}
+  <script>
+    const registerBox = document.querySelector('.register-box');
+    const registerForm = registerBox.querySelector('form');
+    const formAlert = registerBox.querySelector('.form-alert');
+
+    registerBox.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const name = registerForm.querySelector('#name').value
+      const email = registerForm.querySelector('#email').value
+      const password = registerForm.querySelector('#password').value
+      axios({
+        method: 'post',
+        url: `/auth/register`,
+        data: {
+          name, 
+          email, 
+          password
+        }
+      })
+      .then((res) => {
+        if (res.data.message) {
+          alert(res.data.message);
+          registerForm.querySelectorAll('input').forEach((input) => {
+            input.value = ''
+          })
+        } else {
+          location.replace('/login')
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    })
+  </script>
+{% endblock %}

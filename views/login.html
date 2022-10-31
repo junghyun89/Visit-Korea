@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="login-box">
+    <h4>login</h4>
+    <form>
+      <div class="email-field">
+        <label for="email">Email</label>
+        <input
+          type="text"
+          id="email"
+          name="email"
+          class="login-input"
+          placeholder="email"
+          autofocus
+          required
+        />
+      </div>
+      <div class="password-field">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          class="login-input"
+          placeholder="password"
+          required
+        />
+      </div>
+      <button type="submit" class="btn submit-btn">로그인</button>
+    </form>
+    <button class="kakao btn submit-btn">카카오톡으로 로그인</button>
+    <button class="register btn submit-btn">회원가입</button>
+    <div class="form-alert"></div>
+  </div>
+  <section class="tasks-container">
+    <p class="loading-text">Loading...</p>
+    <div class="tasks"></div>
+  </section>
+{% endblock %}
+{% block script %}
+  <script>
+    const loginBox = document.querySelector('.login-box');
+    const loginForm = loginBox.querySelector('form');
+    const formAlert = loginBox.querySelector('.form-alert');
+    const registerBtn = loginBox.querySelector('.register');
+
+    registerBtn.addEventListener('click', () => {
+      location.replace('/register')
+    })
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const email = loginForm.querySelector('#email').value
+      const password = loginForm.querySelector('#password').value
+      axios({
+        method: 'post',
+        url: `/auth/login`,
+        data: {
+          email, 
+          password
+        }
+      })
+      .then((res) => {
+        if (res.data.message) {
+          formAlert.innerText = (res.data.message);
+          loginForm.querySelectorAll('input').forEach((input) => {
+            input.value = ''
+          })
+        } else {
+          location.replace('/')
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+    })
+  </script>
+{% endblock %}
