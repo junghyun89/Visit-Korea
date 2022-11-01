@@ -487,6 +487,6 @@ form > :last-child {
   .main {
     padding: 0 2.5rem;
     grid-template-columns: 1fr 2fr;
-    gap: 2rem;
+    gap: 1rem;
   }
 }

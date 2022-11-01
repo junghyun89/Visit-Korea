@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="main">
+    {{result}}
+  {% for item in result %}
+    <div>{{item.title}}</div>
+  {% endfor %}
+  </div>
+{% endblock %}
