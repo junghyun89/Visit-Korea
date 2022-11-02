@@ -382,7 +382,7 @@ form > :last-child {
 
 }
 
-.icon {
+.search-input .icon {
   height: 55px;
   width: 55px;
   line-height: 55px;
@@ -409,6 +409,123 @@ form > :last-child {
 }
 .status-field label {
   display: inline;
+}
+.result-page {
+  margin-top: 5rem;
+  height: calc(100vh - 75px);
+  padding: 0 2rem;
+}
+.result-page .region {
+  font-weight: 600;
+}
+.result-page .region span:first-of-type {
+  color: var(--primary-500);
+  font-size: 1.2rem;
+}
+.result .site {
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #e5e5e5;
+  cursor: pointer;
+}
+.result .site p {
+  margin: 0.5rem 0;
+  font-size: var(--smallText);
+}
+.result img {
+  width: 15rem;
+  height: 10rem;
+}
+.site-page {
+  display: flex;
+  flex-direction: column;
+}
+.info img {
+  margin-top: 65px;
+  width: 100%;
+  height: 30rem;
+}
+.info div {
+  position: absolute;
+  top: 72px;
+  left: 10px;
+  background: rgba(0,0,0,.5);
+  color: var(--white);
+  height: 540px;
+  width: 352px;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.info div .name {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0;
+}
+.info div .address {
+  font-size: var(--smallText);
+}
+.site-page .buttons {
+  width: 90%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 1rem auto;
+  gap: 1rem;
+  padding: 2rem auto;
+  border-top: 1px solid var(--grey-500);
+}
+.site-page .buttons .icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  gap: 0.5rem;
+  border-right: 1px solid var(--grey-500);
+}
+.site-page .buttons .icon:last-child {
+  border-right: none
+
+}
+.site-page .buttons .icon p {
+  font-size: var(--smallText);
+  margin: 0;
+}
+.site-page .buttons i {
+  font-size: 1.5rem;
+  color: var(--grey-700);
+}
+.details {
+  width: 90%;
+  margin: 0 auto;
+}
+.head-box {
+  background: var(--grey-100);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--grey-600);
+  color: var(--grey-800);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+
+}
+.head-box p {
+  margin:  0;
+}
+.details i {
+  height: 50px;
+  width: 55px;
+  line-height: 50px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: center;
+  font-size: 1.25rem;
+  color: var(--grey-800);
+  cursor: pointer;
 }
 
 /*************
@@ -483,6 +600,12 @@ form > :last-child {
   .single-jobs {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+  }
+  .result {
+    width: 100%;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
   }
   .main {
     padding: 0 2.5rem;

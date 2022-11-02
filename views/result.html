@@ -1,10 +1,45 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div class="main">
-    {{result}}
-  {% for item in result %}
-    <div>{{item.title}}</div>
-  {% endfor %}
+  <div class="result-page">
+    <p class="region"><span>{{region}}</span> 검색결과</p>
+    <div class="result">
+    </div>
   </div>
+{% endblock %}
+{% block script %}
+  <script>
+    window.addEventListener('load', async () => {
+      try {
+        const result = await axios({
+          method: 'get',
+          url: `https://apis.data.go.kr/B551011/KorService/areaBasedList?serviceKey={{serviceKey}}&arrange=O&contentTypeId=12&areaCode=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=C`,
+        })
+        console.log(result.data.response.body.items.item)
+        const regionTag = document.querySelector('.region') 
+        const titles = result.data.response.body.items.item
+        const resultTag = document.querySelector('.result');
+        const span = document.createElement('span')
+        span.innerText = ` ${titles.length}건`
+        regionTag.appendChild(span)
+        titles.forEach(el => {
+          const div = document.createElement('div')
+          const p = document.createElement('p');
+          const img = document.createElement('img')
+          p.innerText = el.title;
+          img.src = el.firstimage ? el.firstimage : ''
+          div.appendChild(img);
+          div.appendChild(p);
+          div.setAttribute('class', 'site')
+          div.addEventListener('click', () => {
+            location.replace(`/site/${el.contentid}`)
+          })
+          resultTag.appendChild(div);
+        });
+
+      } catch (error) {
+        console.error(error)
+      }
+    })
+  </script>
 {% endblock %}

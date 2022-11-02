@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <div class="site-page">
+    <div class="info"></div>
+    <ul class="buttons">
+      <li class="icon like">
+        <i class="fa-regular fa-thumbs-up"></i>
+        <p>좋아요</p>
+        <p class="number">0</p>
+      </li>
+      <li class="icon zzim">
+        <i class="fa-regular fa-heart"></i>
+        <p>찜하기</p>
+        <p class="number">0</p>
+      </li>
+      <li class="icon review">
+        <i class="fa-regular fa-comment-dots"></i>
+        <p>리뷰</p>
+        <p class="number">0</p>
+      </li>
+    </ul>
+    <div class="details">
+      <div class="head-box">
+        <p>상세정보</p>
+        <i class="fa-solid fa-angle-down"></i>
+      </div>
+      
+    </div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    window.addEventListener('load', async () => {
+      try {
+        const result = await axios({
+          method: 'get',
+          url: `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey={{serviceKey}}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId={{id}}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`,
+        })
+        // const regionTag = document.querySelector('.region') 
+        const infoTag = document.querySelector('.info');
+        const site = result.data.response.body.items.item[0]
+        // const span = document.createElement('span')
+        // span.innerText = ` ${titles.length}건`
+        // regionTag.appendChild(span)
+        const div = document.createElement('div')
+        const nameTag = document.createElement('p');
+        const addressTag = document.createElement('p');
+        const img = document.createElement('img')
+        nameTag.innerText = site.title;
+        nameTag.setAttribute('class', 'name');
+        addressTag.innerText = site.addr1;
+        addressTag.setAttribute('class', 'address');
+        img.src = site.firstimage ? site.firstimage : ''
+        infoTag.appendChild(img);
+        div.appendChild(nameTag);
+        div.appendChild(addressTag);
+        infoTag.appendChild(div);
+        //   div.setAttribute('class', 'site')
+        //   div.addEventListener('click', () => {
+        //     location.replace(`/site/${el.title}`)
+        //   resultTag.appendChild(div);
+        // });
+        
+        const headBox = document.querySelector('.head-box');
+        headBox.addEventListener('click', () => {
+          const icon = document.querySelector('.details i')
+          if (icon.classList.contains('fa-angle-down')) {
+            icon.className = "fa-solid fa-angle-up"
+          } else {
+            icon.className = "fa-solid fa-angle-down"
+          }
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    })
+  </script>
+{% endblock %}

@@ -3,35 +3,13 @@
 {% block content %}
   <div class="main">
     <p>looking for someting?</p>
-    <form class="search-input">
-      <input type="text" placeholder="찾으시는 지역을 입력해주세요.">
+    <form class="search-input" action="/search" method="post">
+      <input type="text" placeholder="찾으시는 지역을 입력해주세요." name="region">
       <button class="icon" type="submit"><i class="fas fa-search"></i></button>
     </form>
   </div>
 {% endblock %}
 {% block script %}
-  <script>
-    const serchInput = document.querySelector('.search-input');
-    serchInput.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      try {
-        const result = await axios({
-          method: 'get',
-          url: `https://apis.data.go.kr/B551011/KorService/areaBasedList?serviceKey={{serviceKey}}&arrange=O&contentTypeId=12&numOfRows=10&areaCode=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=C`,
-        })
-        const data = await axios({
-          method: 'post',
-          url: '/search',
-          data: result.data.response.body.items
-        })
-        await axios({
-          method: 'get',
-          url: '/result',
-        })
-        location.replace('/result')
-      } catch (error) {
-        console.error(error)
-      }
-    })
+  <script>    
   </script>
 {% endblock %}

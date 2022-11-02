@@ -1,5 +1,4 @@
 const express = require('express');
-const axios = require('axios');
 
 const router = express.Router();
 
@@ -11,7 +10,6 @@ router.use((req, res, next) => {
 router.get('/', (req, res) => {
   res.render('main', {
     title: 'VISIT-KOREA',
-    serviceKey: process.env.SERVICE_KEY,
   });
 });
 
@@ -24,11 +22,23 @@ router.get('/register', (req, res) => {
 });
 
 router.post('/search', (req, res) => {
-  res.send(req.body.data);
+  res.redirect(`result/${req.body.region}`);
 });
 
-router.get('/result', async (req, res) => {
-  res.render('result', { title: 'VISIT-KOREA || result' });
+router.get('/result/:region', async (req, res) => {
+  res.render('result', {
+    title: 'VISIT-KOREA || result',
+    region: req.params.region,
+    serviceKey: process.env.SERVICE_KEY,
+  });
+});
+
+router.get('/site/:id', async (req, res) => {
+  res.render('site', {
+    title: `VISIT-KOREA || ${req.params.id}`,
+    id: req.params.id,
+    serviceKey: process.env.SERVICE_KEY,
+  });
 });
 
 module.exports = router;
