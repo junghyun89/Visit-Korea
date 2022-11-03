@@ -3,6 +3,7 @@
 {% block content %}
   <div class="login-box">
     <h4>login</h4>
+    <p class="form-alert"></p>
     <form>
       <div class="email-field">
         <label for="email">Email</label>
@@ -31,7 +32,6 @@
     </form>
     <button class="kakao btn submit-btn">카카오톡으로 로그인</button>
     <button class="register btn submit-btn">회원가입</button>
-    <div class="form-alert"></div>
   </div>
   <section class="tasks-container">
     <p class="loading-text">Loading...</p>
@@ -64,9 +64,15 @@
       .then((res) => {
         if (res.data.message) {
           formAlert.innerText = (res.data.message);
+          formAlert.style.display = 'block'
+          formAlert.classList.add('active')
           loginForm.querySelectorAll('input').forEach((input) => {
             input.value = ''
           })
+          setTimeout(() => {
+            formAlert.classList.remove('active');
+            formAlert.style.display = 'none'
+          }, 3500);
         } else {
           location.replace('/')
         }
@@ -74,6 +80,11 @@
       .catch((err) => {
         console.error(err);
       });
+    })
+
+    const kakaoBtn = document.querySelector('.kakao');
+    kakaoBtn.addEventListener('click', () => {
+      location.replace('/auth/kakao')
     })
   </script>
 {% endblock %}

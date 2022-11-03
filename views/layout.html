@@ -17,7 +17,7 @@
         <ul class="menu">
           <li><a href="/">찜한 여행</a></li>
           <li><a href="/">나의 리뷰</a></li>
-          <li><a href="/">회원 탈퇴</a></li>
+          <li><a class="quit">회원 탈퇴</a></li>
         </ul>
         <a class="btn" href="/auth/logout">Logout</a>
       {% else %}
@@ -52,6 +52,21 @@
           ul.classList.remove('show');
         }, 200);
       });
+      
+      const quitBtn = document.querySelector('.quit');
+      quitBtn?.addEventListener('click', async () => {
+        if (confirm('탈퇴하시겠습니까?')) {
+          await axios({
+            method: 'delete',
+            url: `/mypage/quit`,
+            data: {
+              email: '{{user.email}}',
+            }
+          })
+        } else {
+          location.reload()
+        }
+      })
     </script>
     {% block script %}
     {% endblock %}

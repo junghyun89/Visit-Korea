@@ -1,9 +1,10 @@
 const express = require('express');
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 
 const router = express.Router();
 
 router.use((req, res, next) => {
-  res.locals.user = null;
+  res.locals.user = req.user;
   next();
 });
 
@@ -13,11 +14,11 @@ router.get('/', (req, res) => {
   });
 });
 
-router.get('/login', (req, res) => {
+router.get('/login', isNotLoggedIn, (req, res) => {
   res.render('login', { title: 'VISIT-KOREA || login' });
 });
 
-router.get('/register', (req, res) => {
+router.get('/register', isNotLoggedIn, (req, res) => {
   res.render('register', { title: 'VISIT-KOREA || register' });
 });
 

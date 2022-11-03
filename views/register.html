@@ -3,15 +3,16 @@
 {% block content %}
   <div class="register-box">
     <h4>register</h4>
+    <p class="form-alert"></p>
     <form>
       <div class="name-field">
-        <label for="name">Name</label>
+        <label for="nick">Nickname</label>
         <input
           type="text"
-          name="name"
+          name="nick"
           class="register-input"
-          placeholder="name"
-          id="name"
+          placeholder="nickname"
+          id="nick"
           required
         />
       </div>
@@ -54,24 +55,30 @@
 
     registerBox.addEventListener('submit', (e) => {
       e.preventDefault()
-      const name = registerForm.querySelector('#name').value
+      const nick = registerForm.querySelector('#nick').value
       const email = registerForm.querySelector('#email').value
       const password = registerForm.querySelector('#password').value
       axios({
         method: 'post',
         url: `/auth/register`,
         data: {
-          name, 
+          nick, 
           email, 
           password
         }
       })
       .then((res) => {
         if (res.data.message) {
-          alert(res.data.message);
-          registerForm.querySelectorAll('input').forEach((input) => {
+          formAlert.innerText = (res.data.message);
+          formAlert.style.display = 'block'
+          formAlert.classList.add('active')
+          loginForm.querySelectorAll('input').forEach((input) => {
             input.value = ''
           })
+          setTimeout(() => {
+            formAlert.classList.remove('active');
+            formAlert.style.display = 'none'
+          }, 3500);
         } else {
           location.replace('/login')
         }

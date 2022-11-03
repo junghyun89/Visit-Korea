@@ -122,6 +122,7 @@ ul {
 a {
   text-decoration: none;
   color: var(--black);
+  cursor: pointer;
 }
 /*************
     Buttons 
@@ -230,9 +231,7 @@ a {
 /*************
     FORM 
 *************/
-form {
-  
-}
+
 label {
   display: block;
   font-size: var(--smallText);
@@ -256,10 +255,16 @@ textarea {
 ::placeholder {
   color: var(--grey-600);
 }
-.form-alert {
+.form-alert.active {
+  background-color: var(--red-light);
   color: var(--red-dark);
   letter-spacing: var(--letterSpacing);
   text-transform: capitalize;
+  text-align: center;
+  font-size: var(--smallText);
+  margin: 0 0 1rem 0;
+  padding: 0.3rem;
+  border-radius: var(--borderRadius);
 }
 
 .login-box,
@@ -527,6 +532,15 @@ form > :last-child {
   color: var(--grey-800);
   cursor: pointer;
 }
+.detail-info {
+  width: 95%;
+  margin: 1rem auto;
+  display: none;
+}
+.detail-info.active {
+  display: block;
+}
+
 
 /*************
     SINGLE JOB
