@@ -2,7 +2,7 @@
 
 {% block content %}
   <div class="result-page">
-    <p class="region"><span>{{region}}</span> 검색결과</p>
+    <p class="title"><span>{{region}}</span> 검색결과</p>
     <div class="result">
     </div>
   </div>
@@ -16,7 +16,7 @@
           url: `https://apis.data.go.kr/B551011/KorService/areaBasedList?serviceKey={{serviceKey}}&arrange=O&contentTypeId=12&areaCode=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=C`,
         })
         console.log(result.data.response.body.items.item)
-        const regionTag = document.querySelector('.region') 
+        const regionTag = document.querySelector('.title') 
         const titles = result.data.response.body.items.item
         const resultTag = document.querySelector('.result');
         const span = document.createElement('span')

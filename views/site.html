@@ -7,7 +7,7 @@
       <li class="icon like">
         <i class="fa-regular fa-thumbs-up"></i>
         <p>좋아요</p>
-        <p class="number">0</p>
+        <p class="number">{{likerCount}}</p>
       </li>
       <li class="icon zzim">
         <i class="fa-regular fa-heart"></i>
@@ -37,12 +37,8 @@
           method: 'get',
           url: `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey={{serviceKey}}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId={{id}}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`,
         })
-        // const regionTag = document.querySelector('.region') 
         const infoTag = document.querySelector('.info');
         const site = result.data.response.body.items.item[0]
-        // const span = document.createElement('span')
-        // span.innerText = ` ${titles.length}건`
-        // regionTag.appendChild(span)
         const div = document.createElement('div')
         const nameTag = document.createElement('p');
         const addressTag = document.createElement('p');
@@ -56,11 +52,6 @@
         div.appendChild(nameTag);
         div.appendChild(addressTag);
         infoTag.appendChild(div);
-        //   div.setAttribute('class', 'site')
-        //   div.addEventListener('click', () => {
-        //     location.replace(`/site/${el.title}`)
-        //   resultTag.appendChild(div);
-        // });
         
         const headBox = document.querySelector('.head-box');
         headBox.addEventListener('click', () => {
@@ -73,8 +64,21 @@
             icon.className = "fa-solid fa-angle-down"
             detailInfo.classList.remove('active')
           }
-          detailInfo.innerText = site.overview;
+          detailInfo.innerText = site.overview.replace(/<[^>]*>?/g, '');
         })
+      } catch (error) {
+        console.error(error)
+      }
+    })
+
+    const likeBtn = document.querySelector('.like');
+    likeBtn.addEventListener('click', async () => {
+      try {
+        await axios({
+          method: 'post',
+          url: `/site/${'{{id}}'}/like`,
+        })
+        location.reload()
       } catch (error) {
         console.error(error)
       }

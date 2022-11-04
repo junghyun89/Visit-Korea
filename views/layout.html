@@ -13,12 +13,7 @@
       <a href="/" class="logo">visit korea</a>
       <div class="right">
       {% if user %}
-        <i class="fas fa-user"></i>
-        <ul class="menu">
-          <li><a href="/">찜한 여행</a></li>
-          <li><a href="/">나의 리뷰</a></li>
-          <li><a class="quit">회원 탈퇴</a></li>
-        </ul>
+        <a href="/mypage" class="mypage-btn">My page</a>
         <a class="btn" href="/auth/logout">Logout</a>
       {% else %}
         <a class="btn" href="/login">Login</a>
@@ -55,7 +50,7 @@
       
       const quitBtn = document.querySelector('.quit');
       quitBtn?.addEventListener('click', async () => {
-        if (confirm('탈퇴하시겠습니까?')) {
+        if (confirm(`회원 탈퇴 후 동일 이메일로 재가입할 수 없습니다. 탈퇴하시겠습니까?`)) {
           await axios({
             method: 'delete',
             url: `/mypage/quit`,
@@ -63,6 +58,7 @@
               email: '{{user.email}}',
             }
           })
+          location.replace('/')
         } else {
           location.reload()
         }
