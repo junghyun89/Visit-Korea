@@ -1,39 +1,51 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div class="mypage">
-    <div class="header">
-      <p class="title">마이페이지</p>
-      <a class="quit">회원 탈퇴</a>
-    </div>
-    <div class="info-box">
-      <div class="photo-zone">
-        <div class="img-box">
-          <img alt="프로필 사진을 설정해주세요" src="./no-profile.png" class="my-image">
+  <div class="review-page">
+    <div class="popup-wrap"></div>
+    <div class="form-box">
+      <h4>Review</h4>
+      <p class="form-alert"></p>
+      <form>
+        <div class="rate-field">
+          <label for="email">평가</label>
+          <span class="star">
+            ★★★★★
+            <span>★★★★★</span>
+            <input type="range" value="1" step="1" min="0" max="10">
+          </span>
         </div>
-      </div>
-      <div class="right">
-        <p><span class="user-name">{{user.nick}}</span>님의 정보</p>
-        <div class="info-count">
-          <div>
-            <span>좋아요</span>
-            <span>{{myLikeCount}}</span>
-          </div>
-          <div>
-            <span>찜한 여행</span>
-            <span>{{myZzimCount}}</span>
-          </div>
-          <div>
-            <span>나의 리뷰</span>
-            <span></span>
-          </div>
+        <div class="review-field">
+          <label for="review">리뷰</label>
+          <textarea
+            type="text"
+            name="review"
+            id="review"
+            required
+          ></textarea>
         </div>
-      </div>
-    </div>
+        <div class="password-field">
+          <label for="password">여행 사진</label>
+          <input
+            type="password"
+            name="password"
+            class="register-input"
+            placeholder="password"
+            id="password"
+            required
+          />
+        </div>
+        <button type="submit" class="btn submit-btn">가입하기</button>
+      </form>
   </div>
 {% endblock %}
 {% block script %}
   <script>
+    const star = document.querySelector('.star span');
+    const input = document.querySelector('.star input');
+    input.addEventListener('input', (e) => {
+      star.style.width = `${e.target.value * 10}%`;
+    })
     // window.addEventListener('load', async () => {
     //   try {
     //     const result = await axios({

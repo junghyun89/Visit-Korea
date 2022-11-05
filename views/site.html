@@ -4,12 +4,12 @@
   <div class="site-page">
     <div class="info"></div>
     <ul class="buttons">
-      <li class="icon like">
-        <i class="fa-regular fa-thumbs-up"></i>
+      <li class="icon like" data-likeList={{likeList}}>
+        <i class="fa-regular fa-thumbs-up {{liked}}"></i>
         <p>좋아요</p>
         <p class="number">{{likerCount}}</p>
       </li>
-      <li class="icon zzim">
+      <li class="icon zzim" data-zzimList={{zzimList}}>
         <i class="fa-regular fa-heart"></i>
         <p>찜하기</p>
         <p class="number">0</p>
@@ -74,14 +74,82 @@
     const likeBtn = document.querySelector('.like');
     likeBtn.addEventListener('click', async () => {
       try {
-        await axios({
-          method: 'post',
-          url: `/site/${'{{id}}'}/like`,
-        })
-        location.reload()
+        if (!'{{user}}') {
+          if (confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
+            return location.replace('/login')
+          } 
+        } else {
+          const likeList = likeBtn.dataset.likeList || []
+          const likerNumber = likeBtn.querySelector('.number').innerText
+          if (likeBtn.querySelector('i').classList.contains('liked')) {
+            await axios({
+              method: 'delete',
+              url: `/site/${'{{id}}'}/like`,
+            })
+            likeBtn.querySelector('i').classList.remove('liked')
+            likeBtn.querySelector('i').classList.add('unliked')
+            likeBtn.querySelector('.number').innerText = parseInt(likerNumber) - 1
+          } else {
+            const name = document.querySelector('.info .name').innerText
+            await axios({
+              method: 'post',
+              url: `/site/${'{{id}}'}/like`,
+              data: {
+                name,
+                contentId: '{{id}}'
+              }
+            })
+            likeBtn.querySelector('i').classList.remove('unliked')
+            likeBtn.querySelector('i').classList.add('liked')
+            likeBtn.querySelector('.number').innerText = parseInt(likerNumber) + 1
+          }
+        }
       } catch (error) {
         console.error(error)
       }
+    })
+
+    const zzimBtn = document.querySelector('.zzim');
+    zzimBtn.addEventListener('click', async () => {
+      try {
+        if (!'{{user}}') {
+          if (confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
+            return location.replace('/login')
+          } 
+        } else {
+          const zzimList = zzimBtn.dataset.zzimList || []
+          const zzimerNumber = zzimBtn.querySelector('.number').innerText
+          if (zzimBtn.querySelector('i').classList.contains('zzimed')) {
+            await axios({
+              method: 'delete',
+              url: `/site/${'{{id}}'}/zzim`,
+            })
+            zzimBtn.querySelector('i').classList.remove('zzimed')
+            zzimBtn.querySelector('i').classList.add('unzzimed')
+            zzimBtn.querySelector('.number').innerText = parseInt(zzimerNumber) - 1
+          } else {
+            const name = document.querySelector('.info .name').innerText
+            await axios({
+              method: 'post',
+              url: `/site/${'{{id}}'}/zzim`,
+              data: {
+                name,
+                contentId: '{{id}}'
+              }
+            })
+            zzimBtn.querySelector('i').classList.remove('unzzimed')
+            zzimBtn.querySelector('i').classList.add('zzimed')
+            zzimBtn.querySelector('.number').innerText = parseInt(zzimerNumber) + 1
+          }
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    })
+
+    const reviewBtn = document.querySelector('.review');
+    reviewBtn.addEventListener('click', () => {
+      location.replace('/review')
     })
   </script>
 {% endblock %}

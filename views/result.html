@@ -13,9 +13,8 @@
       try {
         const result = await axios({
           method: 'get',
-          url: `https://apis.data.go.kr/B551011/KorService/areaBasedList?serviceKey={{serviceKey}}&arrange=O&contentTypeId=12&areaCode=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=C`,
+          url: `https://apis.data.go.kr/B551011/KorService/searchKeyword?serviceKey={{serviceKey}}&numOfRows=50&pageNo=1&MobileOS=ETC&MobileApp=visitKorea&_type=json&contentTypeId=12&listYN=Y&arrange=Q&keyword={{region}}`,
         })
-        console.log(result.data.response.body.items.item)
         const regionTag = document.querySelector('.title') 
         const titles = result.data.response.body.items.item
         const resultTag = document.querySelector('.result');
