@@ -1,7 +1,12 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-  <div class="review-page">
+  <li class="icon review">
+    <i class="fa-regular fa-comment-dots"></i>
+    <p>리뷰</p>
+    <p class="number">0</p>
+  </li>
+  <div class="review-form hide">
     <div class="popup-wrap"></div>
     <div class="form-box">
       <h4>Review</h4>
@@ -35,7 +40,7 @@
             required
           />
         </div>
-        <button type="submit" class="btn submit-btn">가입하기</button>
+        <button type="submit" class="btn submit-btn">등록</button>
       </form>
   </div>
 {% endblock %}
@@ -46,6 +51,12 @@
     input.addEventListener('input', (e) => {
       star.style.width = `${e.target.value * 10}%`;
     })
+    const reviewBtn = document.querySelector('.review');
+    reviewBtn.addEventListener('click', () => {
+      const reviewBox = document.querySelector(".details.review");
+      reviewBox.scrollIntoView()
+    })
+
     // window.addEventListener('load', async () => {
     //   try {
     //     const result = await axios({

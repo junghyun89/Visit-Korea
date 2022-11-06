@@ -228,8 +228,9 @@ textarea {
 }
 
 .login-box,
-.job-form,
-.register-box, .review-page {
+.register-box,
+.review-form .form-box
+{
   width: 100%;
   background: var(--white);
   border-radius: var(--borderRadius);
@@ -241,7 +242,7 @@ textarea {
   margin-top: 6rem;
 }
 .register-box h4,
-.login-box h4, .review-page h4 {
+.login-box h4 {
   text-align: center;
 }
 .login-box .kakao {
@@ -475,9 +476,15 @@ form > :last-child {
 .site-page .buttons i.unzzimed {
   color: var(--grey-700);
 }
+.site-page .bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 .details {
   width: 90%;
   margin: 0 auto;
+
 }
 .head-box {
   background: var(--grey-100);
@@ -487,30 +494,56 @@ form > :last-child {
   font-weight: 600;
   cursor: pointer;
   position: relative;
-
 }
 .head-box p {
   margin:  0;
 }
 .details i {
   height: 50px;
-  width: 55px;
+  width: 100%;
   line-height: 50px;
   position: absolute;
   top: 0;
   right: 0;
-  text-align: center;
+  text-align: end;
+  padding-right: 1rem;
   font-size: 1.25rem;
   color: var(--grey-800);
   cursor: pointer;
 }
-.detail-info {
+.detail.info, .detail.review {
   width: 95%;
   margin: 1rem auto;
   display: none;
 }
-.detail-info.active {
+.detail.info.active, .detail.review.active {
   display: block;
+}
+.detail.review .top {
+  display: flex;
+  justify-content: space-between;
+  margin: 1rem 0;
+}
+.detail.review p {
+  margin: 0;
+  font-weight: 600;
+}
+.detail.review p span {
+  color: var(--primary-500);
+}
+.detail.review .sort {
+  font-size: var(--smallText);
+  display: flex;
+  gap: 1rem;
+}
+.detail.review .sort li::after {
+  content: '';
+  padding-right: 1rem;
+  font-size: 0.3rem;
+  border-right: 1px solid var(--grey-600);
+}
+.detail.review .sort li:last-child:after {
+  border: none;
 }
 .mypage .header {
   display: flex;
@@ -568,7 +601,7 @@ form > :last-child {
   text-align: center;
   color: var(--primary-500);
 }
-/* .review-page .popup-wrap {
+.review-form .popup-wrap {
   display: block;
   position: fixed;
   width: 100%;
@@ -576,13 +609,24 @@ form > :last-child {
   top: 0;
   left: 0;
   background: rgba(0,0,0,.6);
-} */
-.review-page .star {
+}
+.review-form .form-box {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.review-form.hide .form-box, .review-form.hide .popup-wrap {  
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+}
+.review-form .star {
   position: relative;
   font-size: 2rem;
   color: #ddd;
 }
-.review-page .star input {
+.review-form .star input {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -590,13 +634,16 @@ form > :last-child {
   opacity: 0;
   cursor: pointer;
 }
-.review-page .star span {
+.review-form .star span {
   width: 0;
   position: absolute; 
   left: 0;
-  color: red;
+  color: var(--primary-500);
   overflow: hidden;
   pointer-events: none;
+}
+.review-form textarea {
+  resize: none;
 }
 /*************
     SINGLE JOB

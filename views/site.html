@@ -14,18 +14,33 @@
         <p>찜하기</p>
         <p class="number">0</p>
       </li>
-      <li class="icon review">
-        <i class="fa-regular fa-comment-dots"></i>
-        <p>리뷰</p>
-        <p class="number">0</p>
-      </li>
+      {% include "review.html" %}
     </ul>
-    <div class="details">
-      <div class="head-box">
-        <p>상세정보</p>
-        <i class="fa-solid fa-angle-down"></i>
+    <div class="bottom">
+      <div class="details">
+        <div class="head-box">
+          <p>상세정보</p>
+          <i class="fa-solid fa-angle-down"></i>
+        </div>
+        <div class="detail info"></div>
       </div>
-      <div class="detail-info"></div>
+      <div class="details review">
+        <div class="head-box">
+          <p>리뷰</p>
+          <i class="fa-solid fa-angle-down"></i>
+        </div>
+        <div class="detail review">
+          <div class="top">
+            <p>여행가의 리뷰<span> (0)</span></p>
+            <button class="btn add-review">리뷰 등록</button>
+          </div>
+          <ul class="sort">
+            <li><a>최신</a></li>
+            <li><a>추천</a></li>
+            <li><a>평가</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}
@@ -53,18 +68,20 @@
         div.appendChild(addressTag);
         infoTag.appendChild(div);
         
-        const headBox = document.querySelector('.head-box');
-        headBox.addEventListener('click', () => {
-          const icon = document.querySelector('.details i')
-          const detailInfo = document.querySelector('.detail-info');
-          if (icon.classList.contains('fa-angle-down')) {
-            icon.className = "fa-solid fa-angle-up"
-            detailInfo.classList.add('active')
-          } else {
-            icon.className = "fa-solid fa-angle-down"
-            detailInfo.classList.remove('active')
-          }
-          detailInfo.innerText = site.overview.replace(/<[^>]*>?/g, '');
+        const headBoxs = document.querySelectorAll('.head-box');
+        headBoxs.forEach((box) => {
+          box.addEventListener('click', (e) => {
+            const detailInfo = document.querySelector('.detail.info');
+            console.log(e.target.parentNode.parentNode)
+              if (e.target.classList.contains('fa-angle-down')) {
+                e.target.className = "fa-solid fa-angle-up"
+                e.target.parentNode.parentNode.querySelector('.detail').classList.add('active')
+              } else {
+                e.target.className = "fa-solid fa-angle-down"
+                e.target.parentNode.parentNode.querySelector('.detail').classList.remove('active')
+              }
+            detailInfo.innerText = site.overview.replace(/<[^>]*>?/g, '');
+          })
         })
       } catch (error) {
         console.error(error)
@@ -147,9 +164,12 @@
       }
     })
 
-    const reviewBtn = document.querySelector('.review');
-    reviewBtn.addEventListener('click', () => {
-      location.replace('/review')
+    const addReviewBtn = document.querySelector('.add-review');
+    addReviewBtn.addEventListener('click', () => {
+      const reviewForm = document.querySelector('.review-form');
+      reviewForm.classList.remove('hide')
+      window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
     })
+
   </script>
 {% endblock %}
