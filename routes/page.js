@@ -2,6 +2,7 @@ const express = require('express');
 const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 const Site = require('../models/site');
 const User = require('../models/user');
+const Review = require('../models/review');
 
 const router = express.Router();
 
@@ -54,8 +55,15 @@ router.get('/site/:id', async (req, res, next) => {
   try {
     const site = await Site.findOne({
       where: { contentId: req.params.id },
-      include: [{ model: User, as: 'Liker' }],
+      include: [
+        {
+          model: User,
+          as: 'Liker',
+        },
+        { model: Review },
+      ],
     });
+    console.log('----review', site.Reviews);
     const liked =
       res.locals.likeList.indexOf(req.params.id) !== -1 ? 'liked' : 'unliked';
     const likerCount = site ? site.Liker.length : 0;
@@ -65,71 +73,8 @@ router.get('/site/:id', async (req, res, next) => {
       serviceKey: process.env.SERVICE_KEY,
       likerCount,
       liked,
+      reviews: site.Reviews
     });
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-router.post('/site/:id/like', async (req, res, next) => {
-  try {
-    let site = await Site.findOne({
-      where: { contentId: req.params.id },
-    });
-    if (!site) {
-      site = await Site.create({
-        name: req.body.name,
-        contentId: req.body.contentId,
-      });
-    }
-    await site.addLiker(parseInt(req.user.id, 10));
-    return res.send('success');
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-router.delete('/site/:id/like', async (req, res, next) => {
-  try {
-    const site = await Site.findOne({
-      where: { contentId: req.params.id },
-    });
-    await site.removeLiker(parseInt(req.user.id, 10));
-    return res.send('success');
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-router.post('/site/:id/zzim', async (req, res, next) => {
-  try {
-    let site = await Site.findOne({
-      where: { contentId: req.params.id },
-    });
-    if (!site) {
-      site = await Site.create({
-        name: req.body.name,
-        contentId: req.body.contentId,
-      });
-    }
-    await site.addZzimer(parseInt(req.user.id, 10));
-    return res.send('success');
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-router.delete('/site/:id/zzim', async (req, res, next) => {
-  try {
-    const site = await Site.findOne({
-      where: { contentId: req.params.id },
-    });
-    await site.removeZzimer(parseInt(req.user.id, 10));
-    return res.send('success');
   } catch (error) {
     console.error(error);
     next(error);

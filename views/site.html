@@ -32,13 +32,34 @@
         <div class="detail review">
           <div class="top">
             <p>여행가의 리뷰<span> (0)</span></p>
+          {% if user %}
             <button class="btn add-review">리뷰 등록</button>
+          {% endif %}
           </div>
           <ul class="sort">
             <li><a>최신</a></li>
             <li><a>추천</a></li>
             <li><a>평가</a></li>
           </ul>
+        {% for review in reviews %}
+          <div class="review-box">
+            <div class="left">
+              <div class="photo-zone">
+                <img alt="프로필 사진을 설정해주세요" src="/no-profile.png" class="my-image">
+              </div>
+              <span class="star">
+                ★★★★★
+                <span style="width: {{review.rate}}%;">★★★★★</span>
+              </span>
+            {% if review.img %}
+              <img src="{{review.img}}" alt="">
+            {% endif %}
+            </div>
+            <div class="right">
+              <p>{{review.content}}</p>
+            </div>
+          </div>
+        {% endfor %}
         </div>
       </div>
     </div>
@@ -72,7 +93,6 @@
         headBoxs.forEach((box) => {
           box.addEventListener('click', (e) => {
             const detailInfo = document.querySelector('.detail.info');
-            console.log(e.target.parentNode.parentNode)
               if (e.target.classList.contains('fa-angle-down')) {
                 e.target.className = "fa-solid fa-angle-up"
                 e.target.parentNode.parentNode.querySelector('.detail').classList.add('active')
@@ -165,11 +185,33 @@
     })
 
     const addReviewBtn = document.querySelector('.add-review');
-    addReviewBtn.addEventListener('click', () => {
-      const reviewForm = document.querySelector('.review-form');
-      reviewForm.classList.remove('hide')
+    const reviewWrapper = document.querySelector('.review-form');
+    const reviewBox = document.querySelector(".details.review");
+    const formBox = document.querySelector('.form-box')
+
+    addReviewBtn?.addEventListener('click', () => {
+      reviewWrapper.classList.remove('hide')
       window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+      document.querySelectorAll('.head-box').forEach((box) => {
+        box.querySelectorAll('.fa-solid').forEach(icon => {
+          icon.style.display = 'none'
+        });
+        box.style.position = 'static'
+      })
     })
 
+    document.addEventListener('mouseup', (e) => {
+      if (reviewWrapper.classList.contains('hide')) return
+      if (!formBox.contains(e.target)) {
+        reviewWrapper.classList.add('hide')
+        reviewBox.scrollIntoView({ behavior: "smooth" })
+        document.querySelectorAll('.head-box').forEach((box) => {
+          box.querySelectorAll('.fa-solid').forEach(icon => {
+          icon.style.display = 'block'
+        });
+          box.style.position = 'relative'
+        })
+      }
+    });
   </script>
 {% endblock %}
