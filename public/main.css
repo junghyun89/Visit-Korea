@@ -170,6 +170,7 @@ a {
   justify-content: space-between;
   transition: var(--transition);
   box-shadow: var(--shadow-1);
+  z-index: 1;
 }
 .mypage .quit, .mypage-btn {
   padding: 0.4rem;
@@ -462,16 +463,14 @@ form > :last-child {
   font-size: 1.5rem;
   color: var(--grey-700);
 }
-.site-page .buttons i.liked {
+.site-page .buttons i.liked,
+.site-page .buttons i.zzimed,
+.site-page .review-buttons i.liked {
   color: var(--primary-500);
 }
-.site-page .buttons i.unliked {
-  color: var(--grey-700);
-}
-.site-page .buttons i.zzimed {
-  color: var(--primary-500);
-}
-.site-page .buttons i.unzzimed {
+.site-page .buttons i.unliked,
+.site-page .buttons i.unzzimed,
+.site-page .review-buttons i.unliked {
   color: var(--grey-700);
 }
 .site-page .bottom {
@@ -496,7 +495,7 @@ form > :last-child {
 .head-box p {
   margin:  0;
 }
-.details i {
+.head-box i {
   height: 50px;
   width: 100%;
   line-height: 50px;
@@ -548,7 +547,7 @@ form > :last-child {
   gap: 0.5rem;
   align-items: center;
 }
-.mypage .info-box, .site-page .review-box {
+.mypage .info-box {
   display: flex;
   align-items: center;
   gap: 1.5rem;
@@ -556,19 +555,10 @@ form > :last-child {
   box-shadow: var(--shadow-1);
   padding: 1rem;
 }
-.info-box .photo-zone, .review-box .photo-zone{
-  width: 130px;
-  height: 130px;
-  position: relative;
-}
-.info-box img, .review-box img {
-  width: 120px;
-  height: 120px;
+.info-box img, .review-box .user-image {
+  width: 95px;
+  height: 95px;
   border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 .mypage .info-box .right {
   display: flex;
@@ -661,23 +651,67 @@ form > :last-child {
   cursor: pointer;
 }
 .site-page .review-box {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background-color: var(--grey-200);
+  padding: 0.6rem;
   background: inherit;
-  border: 1px solid var(--grey-200);
+  border: none;
+  border-top: 1px solid var(--grey-200);
 }
 .review-box .left {
-  width: 130px;
-  /* margin: 0 auto; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120px;
+}
+.review-box .left p {
+  font-size: var(--smallText);
+}
+.review-box .left p:first-of-type {
+  margin-top: 0.5rem;
 }
 .review-box .star {
-  width: 130px;
-  font-size: 1.2rem;
-  margin: 0 auto;
+  font-size: var(--smallText);
 }
-.review-box .star span {
-  width: 130px;
-  margin: 0 auto;
+.review-box .right {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+.review-box .review-img {
+  width: 150px;
+  display: inline;
+}
+.review-box .thumbs-up {
+  margin-top: 0.3rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: var(--smallText);
+  gap: 0.5rem;
+  color: var(--primary-500);
+}
+.review-box .mini-btn {
+  border-radius: var(--borderRadius);
+  padding: 0.1rem 0.3rem;
+}
+.review-box .thumbs-up a {
+  color: var(--primary-500);
+  border: 1px solid var(--primary-500);
+}
+.review-box .review-buttons a {
+  color: var(--grey-800);
+  border: 1px solid var(--grey-800);
+  font-size: var(--smallText);
+}
 
-}
+
 /*************
     SINGLE JOB
 *************/

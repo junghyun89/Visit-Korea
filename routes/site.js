@@ -74,6 +74,41 @@ router.delete('/:id/zzim', isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.post('/:id/thumbsup', isLoggedIn, async (req, res, next) => {
+  try {
+    const review = await Review.findAll({
+      where: { SiteId: req.body.reviewId },
+    });
+    const site = await Site.findOne({
+      where: { contentId: req.params.id },
+    });
+    if (!site) {
+      site = await Site.create({
+        name: req.body.name,
+        contentId: req.body.contentId,
+      });
+    }
+    await review.addUsers(parseInt(req.user.id, 10));
+    return res.send('success');
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/:id/thumbsup', isLoggedIn, async (req, res, next) => {
+  try {
+    const review = await Review.findAll({
+      where: { SiteId: req.body.reviewId },
+    });
+    await review.removeUsers(parseInt(req.user.id, 10));
+    return res.send('success');
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 try {
   fs.readdirSync('uploads');
 } catch (error) {
@@ -97,13 +132,22 @@ const upload = multer({
 });
 
 router.post(
+  '/:id/review/image',
+  isLoggedIn,
+  upload.single('image'),
+  async (req, res, next) => {
+    res.json({ url: `${req.file.filename}` });
+  }
+);
+
+const upload2 = multer();
+router.post(
   '/:id/review',
   isLoggedIn,
-  upload.single('img'),
+  upload2.none(),
   async (req, res, next) => {
     try {
-      const { content, rate, name } = req.body;
-      const img = req.file ? req.file.filename : '';
+      const { content, rate, name, img } = req.body;
       let site = await Site.findOne({
         where: { contentId: req.params.id },
       });
@@ -121,7 +165,7 @@ router.post(
         content,
         rate,
         img,
-        UserId: req.user.id,
+        ReviewerId: req.user.id,
         SiteId: site.id,
       });
       return res.send('ok');

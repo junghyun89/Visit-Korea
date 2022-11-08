@@ -31,7 +31,10 @@ module.exports = class Review extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Review.belongsTo(db.User, { onDelete: 'CASCADE' });
+    db.Review.belongsTo(db.User, { onDelete: 'CASCADE', as: 'Reviewer' });
+    db.Review.belongsToMany(db.User, {
+      through: 'ThumbsUp',
+    });
     db.Review.belongsTo(db.Site);
   }
 };

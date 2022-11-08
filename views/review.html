@@ -2,7 +2,7 @@
   <li class="icon review">
     <i class="fa-regular fa-comment-dots"></i>
     <p>리뷰</p>
-    <p class="number">0</p>
+    <p class="number">{{reviews.length}}</p>
   </li>
   <div class="review-form hide">
     <div class="form-box">
@@ -60,18 +60,19 @@
     })
 
     if (imgInput) {
-      imgInput.addEventListener('change', (e) => {
-        const imgUrl = URL.createObjectURL(e.target.files[0]);
-        console.log(imgInput.files[0])
+      imgInput.addEventListener('change', async (e) => {
+        const formData = new FormData();
+        formData.append('image', imgInput.files[0]);
+        const imgUrl = URL.createObjectURL(imgInput.files[0]);
         imgPreview.src = imgUrl;
         imgPreview.style.display = 'inline';
+        const result = await axios.post('/site/{{id}}/review/image', formData);
+        document.querySelector('#img-url').value = result.data.url
       });
     }
     reviewForm.addEventListener('submit', async (e) => {
       try {
         e.preventDefault()
-        const formData = new FormData();
-        formData.append('img', imgInput.files[0]);
         const name = document.querySelector('.info .name').innerText
         await axios({
           method: 'post',
@@ -79,7 +80,7 @@
           data: {
             content: reviewForm.querySelector('textarea').value,
             rate: starInput.value * 10,
-            img: formData,
+            img: document.querySelector('#img-url').value,
             name,
           }
         })

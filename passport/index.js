@@ -3,6 +3,7 @@ const local = require('./localStrategy');
 const kakao = require('./kakaoStrategy');
 const User = require('../models/user');
 const Site = require('../models/site');
+const Review = require('../models/review');
 
 module.exports = () => {
   passport.serializeUser((user, done) => {
@@ -20,6 +21,9 @@ module.exports = () => {
         {
           model: Site,
           as: 'Liked',
+        },
+        {
+          model: Review,
         },
       ],
     })

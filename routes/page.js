@@ -14,6 +14,10 @@ router.use((req, res, next) => {
     req.user && req.user.Liked ? req.user.Liked.map((l) => l.contentId) : [];
   res.locals.zzimList =
     req.user && req.user.Zzimed ? req.user.Zzimed.map((l) => l.contentId) : [];
+  res.locals.thumbsList =
+    req.user && req.user.Reviews
+      ? req.user.Reviews.map((l) => l.contentId)
+      : [];
   next();
 });
 
@@ -60,20 +64,44 @@ router.get('/site/:id', async (req, res, next) => {
           model: User,
           as: 'Liker',
         },
+        {
+          model: User,
+          as: 'Zzimer',
+        },
         { model: Review },
       ],
     });
-    console.log('----review', site.Reviews);
+    const reviews = site
+      ? await Review.findAll({
+          where: { SiteId: site.id },
+          include: [
+            { model: User, as: 'Reviewer' },
+            { model: User },
+            { model: Site },
+          ],
+        })
+      : [];
+    console.log('----review', reviews.getUsers());
     const liked =
       res.locals.likeList.indexOf(req.params.id) !== -1 ? 'liked' : 'unliked';
     const likerCount = site ? site.Liker.length : 0;
+    const zzimed =
+      res.locals.zzimList.indexOf(req.params.id) !== -1 ? 'zzimed' : 'unzzimed';
+    const zzimerCount = site ? site.Zzimer.length : 0;
+    const thumbs =
+      res.locals.thumbsList.indexOf(req.params.id) !== -1 ? 'liked' : 'unliked';
+    const thumbsCount = site && reviews ? reviews.Users.length : 0;
     res.render('site', {
       title: `VISIT-KOREA || site: ${req.params.id}`,
       id: req.params.id,
       serviceKey: process.env.SERVICE_KEY,
       likerCount,
       liked,
-      reviews: site.Reviews
+      zzimed,
+      zzimerCount,
+      reviews,
+      thumbs,
+      thumbsCount,
     });
   } catch (error) {
     console.error(error);

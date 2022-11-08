@@ -10,9 +10,9 @@
         <p class="number">{{likerCount}}</p>
       </li>
       <li class="icon zzim" data-zzimList={{zzimList}}>
-        <i class="fa-regular fa-heart"></i>
+        <i class="fa-regular fa-heart {{zzimed}}"></i>
         <p>찜하기</p>
-        <p class="number">0</p>
+        <p class="number">{{zzimerCount}}</p>
       </li>
       {% include "review.html" %}
     </ul>
@@ -31,7 +31,7 @@
         </div>
         <div class="detail review">
           <div class="top">
-            <p>여행가의 리뷰<span> (0)</span></p>
+            <p>여행가의 리뷰<span> ({{reviews.length}})</span></p>
           {% if user %}
             <button class="btn add-review">리뷰 등록</button>
           {% endif %}
@@ -44,19 +44,34 @@
         {% for review in reviews %}
           <div class="review-box">
             <div class="left">
-              <div class="photo-zone">
-                <img alt="프로필 사진을 설정해주세요" src="/no-profile.png" class="my-image">
-              </div>
+            {% if review.User.img %}
+              <img src="{{review.User.img}}" class="user-image">
+            {% else %}
+              <img src="/profile.png" class="user-image">
+            {% endif %}
+              <p>{{review.Reviewer.nick}}</p>
+              <p class="createdAt" data-created="{{review.createdAt}}"></p>
               <span class="star">
                 ★★★★★
                 <span style="width: {{review.rate}}%;">★★★★★</span>
               </span>
-            {% if review.img %}
-              <img src="{{review.img}}" alt="">
-            {% endif %}
             </div>
             <div class="right">
+              <div class="thumbs-up">
+                <i class="fa-regular fa-thumbs-up {{thumbs}}"></i>
+                <p class="number">{{thumbsCount}}</p>
+                <a class="mini-btn" data-id="{{review.id}}">추천</a>
+              </div>
               <p>{{review.content}}</p>
+            {% if review.img %}
+              <img src="/{{review.img}}" class="review-img">
+            {% endif %}
+            {% if review.Reviewer.nick === user.nick %}
+              <div class="review-buttons">
+                <a class="mini-btn">수정</a>
+                <a class="mini-btn">삭제</a>
+              </div>
+            {% endif %}
             </div>
           </div>
         {% endfor %}
@@ -146,6 +161,47 @@
       }
     })
 
+    const thumbsBtns = document.querySelectorAll('.thumbs-up a');
+    thumbsBtns.forEach((btn) => {
+      btn.addEventListener('click', async () => {
+      try {
+        if (!'{{user}}') {
+          if (confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
+            return location.replace('/login')
+          } 
+        } else {
+          const btnParent = btn.parentElement.querySelector('i')
+          const likerNumber = btnParent.querySelector('.number').innerText
+          if (btnParent.classList.contains('liked')) {
+            await axios({
+              method: 'delete',
+              url: `/site/${'{{id}}'}/thumbsup`,
+            })
+            btnParent.querySelector('i').classList.remove('liked')
+            btnParent.querySelector('i').classList.add('unliked')
+            btnParent.querySelector('.number').innerText = parseInt(likerNumber) - 1
+          } else {
+            const name = document.querySelector('.info .name').innerText
+            await axios({
+              method: 'post',
+              url: `/site/${'{{id}}'}/thumbsup`,
+              data: {
+                name,
+                contentId: '{{id}}',
+                reviewId: btn.dataset.id
+              }
+            })
+            btnParent.querySelector('i').classList.remove('unliked')
+            btnParent.querySelector('i').classList.add('liked')
+            btnParent.querySelector('.number').innerText = parseInt(likerNumber) + 1
+          }
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    })
+    })
+
     const zzimBtn = document.querySelector('.zzim');
     zzimBtn.addEventListener('click', async () => {
       try {
@@ -213,5 +269,14 @@
         })
       }
     });
+
+    const createdDateTag = document.querySelectorAll('.createdAt');
+    createdDateTag.forEach((tag) => {
+      const createdAt = new Date(tag.dataset.created);
+      const year = createdAt.getFullYear();
+      const month = createdAt.getMonth() + 1 < 10 ? `0${createdAt.getMonth() + 1}` : createdAt.getMonth() + 1;
+      const date = createdAt.getDate() + 1 < 10 ? `0${createdAt.getDate() + 1}` : createdAt.getDate() + 1;
+      tag.innerText = `${year}.${month}.${date}`
+    })
   </script>
 {% endblock %}
