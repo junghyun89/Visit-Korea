@@ -4,12 +4,12 @@
   <div class="site-page">
     <div class="info"></div>
     <ul class="buttons">
-      <li class="icon like" data-likeList={{likeList}}>
+      <li class="icon like">
         <i class="fa-regular fa-thumbs-up {{liked}}"></i>
         <p>좋아요</p>
         <p class="number">{{likerCount}}</p>
       </li>
-      <li class="icon zzim" data-zzimList={{zzimList}}>
+      <li class="icon zzim">
         <i class="fa-regular fa-heart {{zzimed}}"></i>
         <p>찜하기</p>
         <p class="number">{{zzimerCount}}</p>
@@ -24,7 +24,7 @@
         </div>
         <div class="detail info"></div>
       </div>
-      <div class="details review">
+      <div class="details review" data-thumbs={{thumbsList}}>
         <div class="head-box">
           <p>리뷰</p>
           <i class="fa-solid fa-angle-down"></i>
@@ -44,22 +44,22 @@
         {% for review in reviews %}
           <div class="review-box">
             <div class="left">
-            {% if review.User.img %}
+            {% if review.Reviewer.img %}
               <img src="{{review.User.img}}" class="user-image">
             {% else %}
               <img src="/profile.png" class="user-image">
             {% endif %}
               <p>{{review.Reviewer.nick}}</p>
-              <p class="createdAt" data-created="{{review.createdAt}}"></p>
+              <p class="createdAt" data-created="{{review.updatedAt}}"></p>
               <span class="star">
                 ★★★★★
                 <span style="width: {{review.rate}}%;">★★★★★</span>
               </span>
             </div>
             <div class="right">
-              <div class="thumbs-up">
-                <i class="fa-regular fa-thumbs-up {{thumbs}}"></i>
-                <p class="number">{{thumbsCount}}</p>
+              <div class="thumbs-up" id="id-{{review.id}}">
+                <i class="fa-regular fa-thumbs-up"></i>
+                <p class="number">{{review.Upuser.length}}</p>
                 <a class="mini-btn" data-id="{{review.id}}">추천</a>
               </div>
               <p>{{review.content}}</p>
@@ -68,8 +68,8 @@
             {% endif %}
             {% if review.Reviewer.nick === user.nick %}
               <div class="review-buttons">
-                <a class="mini-btn">수정</a>
-                <a class="mini-btn">삭제</a>
+                <a class="mini-btn update" data-id="{{review.id}}">수정</a>
+                <a class="mini-btn delete" data-id="{{review.id}}">삭제</a>
               </div>
             {% endif %}
             </div>
@@ -82,7 +82,19 @@
 {% endblock %}
 {% block script %}
   <script>
+    const reviewBox = document.querySelector(".details.review");
     window.addEventListener('load', async () => {
+      let upList = []
+      document.querySelectorAll('.thumbs-up').forEach((el) => {
+        upList.push(el.id.substr(3))
+      })
+      console.log(upList)
+      upList.forEach((el) => {
+        if (reviewBox.dataset.thumbs.indexOf(el) !== -1) {
+          document.querySelector(`#id-${el} i`).classList.add('liked')
+          document.querySelector(`#id-${el} a`).innerText = '추천 취소'
+        }
+      })
       try {
         const result = await axios({
           method: 'get',
@@ -131,7 +143,6 @@
             return location.replace('/login')
           } 
         } else {
-          const likeList = likeBtn.dataset.likeList || []
           const likerNumber = likeBtn.querySelector('.number').innerText
           if (likeBtn.querySelector('i').classList.contains('liked')) {
             await axios({
@@ -161,8 +172,10 @@
       }
     })
 
+
     const thumbsBtns = document.querySelectorAll('.thumbs-up a');
     thumbsBtns.forEach((btn) => {
+      const btnParent = btn.parentElement
       btn.addEventListener('click', async () => {
       try {
         if (!'{{user}}') {
@@ -170,13 +183,16 @@
             return location.replace('/login')
           } 
         } else {
-          const btnParent = btn.parentElement.querySelector('i')
+          console.log(btnParent)
           const likerNumber = btnParent.querySelector('.number').innerText
-          if (btnParent.classList.contains('liked')) {
+          const reviewId = btn.dataset.id
+          if (btnParent.querySelector('i').classList.contains('liked')) {
+            console.log('delete')
             await axios({
               method: 'delete',
-              url: `/site/${'{{id}}'}/thumbsup`,
+              url: `/site/${'{{id}}'}/review/${reviewId}/thumbsup`,
             })
+            btn.innerText = '추천'
             btnParent.querySelector('i').classList.remove('liked')
             btnParent.querySelector('i').classList.add('unliked')
             btnParent.querySelector('.number').innerText = parseInt(likerNumber) - 1
@@ -184,13 +200,13 @@
             const name = document.querySelector('.info .name').innerText
             await axios({
               method: 'post',
-              url: `/site/${'{{id}}'}/thumbsup`,
+              url: `/site/${'{{id}}'}/review/${reviewId}/thumbsup`,
               data: {
                 name,
                 contentId: '{{id}}',
-                reviewId: btn.dataset.id
               }
             })
+            btn.innerText = '추천 취소'
             btnParent.querySelector('i').classList.remove('unliked')
             btnParent.querySelector('i').classList.add('liked')
             btnParent.querySelector('.number').innerText = parseInt(likerNumber) + 1
@@ -210,7 +226,6 @@
             return location.replace('/login')
           } 
         } else {
-          const zzimList = zzimBtn.dataset.zzimList || []
           const zzimerNumber = zzimBtn.querySelector('.number').innerText
           if (zzimBtn.querySelector('i').classList.contains('zzimed')) {
             await axios({
@@ -242,11 +257,10 @@
 
     const addReviewBtn = document.querySelector('.add-review');
     const reviewWrapper = document.querySelector('.review-form');
-    const reviewBox = document.querySelector(".details.review");
     const formBox = document.querySelector('.form-box')
 
     addReviewBtn?.addEventListener('click', () => {
-      reviewWrapper.classList.remove('hide')
+      reviewWrapper.classList.remove('hide');
       window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
       document.querySelectorAll('.head-box').forEach((box) => {
         box.querySelectorAll('.fa-solid').forEach(icon => {
@@ -259,8 +273,14 @@
     document.addEventListener('mouseup', (e) => {
       if (reviewWrapper.classList.contains('hide')) return
       if (!formBox.contains(e.target)) {
-        reviewWrapper.classList.add('hide')
-        reviewBox.scrollIntoView({ behavior: "smooth" })
+        reviewWrapper.classList.add('hide');
+        starInput.value = 0;
+        star.style.width = `${starInput.value * 10}%`;
+        reviewForm.querySelector('textarea').value = '';
+        imgPreview.src = '';
+        imgPreview.style.display = 'none';
+        reviewForm.querySelector('.submit-btn').innerText = '등록'
+        reviewBox.scrollIntoView({ behavior: "smooth" });
         document.querySelectorAll('.head-box').forEach((box) => {
           box.querySelectorAll('.fa-solid').forEach(icon => {
           icon.style.display = 'block'
@@ -275,8 +295,60 @@
       const createdAt = new Date(tag.dataset.created);
       const year = createdAt.getFullYear();
       const month = createdAt.getMonth() + 1 < 10 ? `0${createdAt.getMonth() + 1}` : createdAt.getMonth() + 1;
-      const date = createdAt.getDate() + 1 < 10 ? `0${createdAt.getDate() + 1}` : createdAt.getDate() + 1;
+      const date = createdAt.getDate() < 10 ? `0${createdAt.getDate()}` : createdAt.getDate();
       tag.innerText = `${year}.${month}.${date}`
+    })
+
+    const deleteBtn = document.querySelector('.mini-btn.delete')
+    deleteBtn?.addEventListener('click', async (e) => {
+      try {
+        if (confirm('삭제하시겠습니까?')) {
+          const name = document.querySelector('.info .name').innerText;
+          await axios({
+            method: 'delete',
+            url: `/site/{{id}}/review/${e.target.dataset.id}`,
+          })
+          location.replace('/site/{{id}}')
+        } 
+      } catch (error) {
+        console.error(error)
+      }
+    })
+
+    const updateBtn = document.querySelector('.mini-btn.update')
+    updateBtn?.addEventListener('click', async (e) => {
+      try {
+        reviewWrapper.classList.remove('hide');
+        window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+        document.querySelectorAll('.head-box').forEach((box) => {
+          box.querySelectorAll('.fa-solid').forEach(icon => {
+            icon.style.display = 'none'
+          });
+          box.style.position = 'static'
+        })
+        const review = await axios({
+          method: 'get',
+          url: `/site/{{id}}/review/${e.target.dataset.id}`,
+        })
+        console.log(review.data.rate)
+        starInput.value = review.data.rate / 10;
+        star.style.width = `${starInput.value * 10}%`;
+        reviewForm.querySelector('textarea').value = review.data.content;
+        imgPreview.src = `/${review.data.img}`;
+        reviewForm.querySelector('.submit-btn').innerText = '수정'
+        // imgUrlTag.value = review.img
+        imgPreview.style.display = 'inline';
+        // if (confirm('삭제하시겠습니까?')) {
+        //   const name = document.querySelector('.info .name').innerText;
+        //   await axios({
+        //     method: 'delete',
+        //     url: `/site/{{id}}/review/${e.target.dataset.id}`,
+        //   })
+        //   location.replace('/site/{{id}}')
+        // } 
+      } catch (error) {
+        console.error(error)
+      }
     })
   </script>
 {% endblock %}

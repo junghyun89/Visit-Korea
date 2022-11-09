@@ -74,40 +74,52 @@ router.delete('/:id/zzim', isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.post('/:id/thumbsup', isLoggedIn, async (req, res, next) => {
-  try {
-    const review = await Review.findAll({
-      where: { SiteId: req.body.reviewId },
-    });
-    const site = await Site.findOne({
-      where: { contentId: req.params.id },
-    });
-    if (!site) {
-      site = await Site.create({
-        name: req.body.name,
-        contentId: req.body.contentId,
+router.post(
+  '/:id/review/:reviewId/thumbsup',
+  isLoggedIn,
+  async (req, res, next) => {
+    try {
+      let site = await Site.findOne({
+        where: { contentId: req.params.id },
       });
+      if (!site) {
+        site = await Site.create({
+          name: req.body.name,
+          contentId: req.body.contentId,
+        });
+      }
+      const review = await Review.findOne({
+        where: { SiteId: site.id, id: req.params.reviewId },
+      });
+      console.log('------tttreview', review);
+      await review.addUpuser(parseInt(req.user.id, 10));
+      return res.send('success');
+    } catch (error) {
+      console.error(error);
+      next(error);
     }
-    await review.addUsers(parseInt(req.user.id, 10));
-    return res.send('success');
-  } catch (error) {
-    console.error(error);
-    next(error);
   }
-});
+);
 
-router.delete('/:id/thumbsup', isLoggedIn, async (req, res, next) => {
-  try {
-    const review = await Review.findAll({
-      where: { SiteId: req.body.reviewId },
-    });
-    await review.removeUsers(parseInt(req.user.id, 10));
-    return res.send('success');
-  } catch (error) {
-    console.error(error);
-    next(error);
+router.delete(
+  '/:id/review/:reviewId/thumbsup',
+  isLoggedIn,
+  async (req, res, next) => {
+    try {
+      const site = await Site.findOne({
+        where: { contentId: req.params.id },
+      });
+      const review = await Review.findOne({
+        where: { SiteId: site.id, id: req.params.reviewId },
+      });
+      await review.removeUpuser(parseInt(req.user.id, 10));
+      return res.send('success');
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
   }
-});
+);
 
 try {
   fs.readdirSync('uploads');
@@ -148,6 +160,7 @@ router.post(
   async (req, res, next) => {
     try {
       const { content, rate, name, img } = req.body;
+      console.log('-----img', req.body);
       let site = await Site.findOne({
         where: { contentId: req.params.id },
       });
@@ -158,7 +171,7 @@ router.post(
         });
       }
       const exReview = await Review.findOne({
-        where: { UserId: req.user.id, content },
+        where: { ReviewerId: req.user.id, content },
       });
       if (exReview) return;
       await Review.create({
@@ -175,5 +188,66 @@ router.post(
     }
   }
 );
+
+router.patch(
+  '/:id/review/:reviewId',
+  isLoggedIn,
+  upload2.none(),
+  async (req, res, next) => {
+    try {
+      const { content, rate, img } = req.body;
+      const review = await Review.findOne({
+        where: { ReviewerId: req.user.id, id: req.params.reviewId },
+      });
+      console.log('-----review!', review);
+      review.update({ content, img, rate });
+      return res.send('ok');
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  }
+);
+
+router.get('/:id/review/:reviewId', isLoggedIn, async (req, res, next) => {
+  try {
+    const review = await Review.findOne({
+      where: {
+        ReviewerId: req.user.id,
+        id: req.params.reviewId,
+      },
+    });
+    return res.send(review);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/:id/review/:reviewId', isLoggedIn, async (req, res, next) => {
+  try {
+    const review = await Review.findOne({
+      where: {
+        ReviewerId: req.user.id,
+        id: req.params.reviewId,
+      },
+    });
+    await review.destroy();
+    await review.removeUpuser(parseInt(req.params.reviewId, 10));
+
+    const imgFile = `uploads/${review.img}`;
+    if (fs.existsSync(imgFile)) {
+      try {
+        fs.unlinkSync(imgFile);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    return res.send('ok');
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
 
 module.exports = router;

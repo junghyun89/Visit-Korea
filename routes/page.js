@@ -10,14 +10,7 @@ router.use((req, res, next) => {
   res.locals.user = req.user;
   res.locals.myZzimCount = req.user ? req.user.Zzimed.length : 0;
   res.locals.myLikeCount = req.user ? req.user.Liked.length : 0;
-  res.locals.likeList =
-    req.user && req.user.Liked ? req.user.Liked.map((l) => l.contentId) : [];
-  res.locals.zzimList =
-    req.user && req.user.Zzimed ? req.user.Zzimed.map((l) => l.contentId) : [];
-  res.locals.thumbsList =
-    req.user && req.user.Reviews
-      ? req.user.Reviews.map((l) => l.contentId)
-      : [];
+  res.locals.myReviewCount = req.user ? req.user.Reviewed.length : 0;
   next();
 });
 
@@ -76,21 +69,25 @@ router.get('/site/:id', async (req, res, next) => {
           where: { SiteId: site.id },
           include: [
             { model: User, as: 'Reviewer' },
-            { model: User },
+            { model: User, as: 'Upuser' },
             { model: Site },
           ],
         })
       : [];
-    console.log('----review', reviews.getUsers());
-    const liked =
-      res.locals.likeList.indexOf(req.params.id) !== -1 ? 'liked' : 'unliked';
+    const likeList =
+      req.user && req.user.Liked ? req.user.Liked.map((l) => l.contentId) : [];
+    const zzimList =
+      req.user && req.user.Zzimed
+        ? req.user.Zzimed.map((l) => l.contentId)
+        : [];
+    const thumbsList =
+      req.user && req.user.Uped ? req.user.Uped.map((l) => l.id) : [];
+
+    const liked = likeList.indexOf(req.params.id) !== -1 ? 'liked' : 'unliked';
     const likerCount = site ? site.Liker.length : 0;
     const zzimed =
-      res.locals.zzimList.indexOf(req.params.id) !== -1 ? 'zzimed' : 'unzzimed';
+      zzimList.indexOf(req.params.id) !== -1 ? 'zzimed' : 'unzzimed';
     const zzimerCount = site ? site.Zzimer.length : 0;
-    const thumbs =
-      res.locals.thumbsList.indexOf(req.params.id) !== -1 ? 'liked' : 'unliked';
-    const thumbsCount = site && reviews ? reviews.Users.length : 0;
     res.render('site', {
       title: `VISIT-KOREA || site: ${req.params.id}`,
       id: req.params.id,
@@ -100,8 +97,7 @@ router.get('/site/:id', async (req, res, next) => {
       zzimed,
       zzimerCount,
       reviews,
-      thumbs,
-      thumbsCount,
+      thumbsList,
     });
   } catch (error) {
     console.error(error);

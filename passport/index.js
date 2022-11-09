@@ -24,6 +24,11 @@ module.exports = () => {
         },
         {
           model: Review,
+          as: 'Reviewed',
+        },
+        {
+          model: Review,
+          as: 'Uped',
         },
       ],
     })

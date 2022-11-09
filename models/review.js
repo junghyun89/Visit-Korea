@@ -34,6 +34,7 @@ module.exports = class Review extends Sequelize.Model {
     db.Review.belongsTo(db.User, { onDelete: 'CASCADE', as: 'Reviewer' });
     db.Review.belongsToMany(db.User, {
       through: 'ThumbsUp',
+      as: 'Upuser',
     });
     db.Review.belongsTo(db.Site);
   }

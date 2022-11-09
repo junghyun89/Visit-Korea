@@ -59,31 +59,42 @@
       reviewBox.scrollIntoView()
     })
 
+    const imgUrlTag = document.querySelector('#img-url')
     if (imgInput) {
       imgInput.addEventListener('change', async (e) => {
         const formData = new FormData();
         formData.append('image', imgInput.files[0]);
-        const imgUrl = URL.createObjectURL(imgInput.files[0]);
-        imgPreview.src = imgUrl;
-        imgPreview.style.display = 'inline';
         const result = await axios.post('/site/{{id}}/review/image', formData);
-        document.querySelector('#img-url').value = result.data.url
+        imgPreview.src = `/${result.data.url}`;
+        imgUrlTag.value = result.data.url
+        imgPreview.style.display = 'inline';
       });
     }
     reviewForm.addEventListener('submit', async (e) => {
       try {
         e.preventDefault()
-        const name = document.querySelector('.info .name').innerText
-        await axios({
-          method: 'post',
-          url: `/site/{{id}}/review`,
-          data: {
-            content: reviewForm.querySelector('textarea').value,
-            rate: starInput.value * 10,
-            img: document.querySelector('#img-url').value,
-            name,
-          }
-        })
+        if (reviewForm.querySelector('.submit-btn').innerText === '수정') {
+          await axios({
+            method: 'patch',
+            url: `/site/{{id}}/review/${updateBtn.dataset.id}`,
+            data: {
+              content: reviewForm.querySelector('textarea').value,
+              rate: starInput.value * 10,
+              img: imgUrlTag.value,
+            }
+          })
+        } else {
+          await axios({
+            method: 'post',
+            url: `/site/{{id}}/review`,
+            data: {
+              content: reviewForm.querySelector('textarea').value,
+              rate: starInput.value * 10,
+              img: imgUrlTag.value,
+              name,
+            }
+          })
+        }
         location.replace('/site/{{id}}')
       } catch (error) {
         console.error(error)
