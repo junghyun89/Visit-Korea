@@ -7,7 +7,16 @@
       <a class="quit">회원 탈퇴</a>
     </div>
     <div class="info-box">
-      <img alt="프로필 사진을 설정해주세요" src="./no-profile.png" class="my-image">
+      <form enctype="multipart/form-data" action="/mypage/user/{{user.id}}/image" method="post">
+      {% if user.img %}
+        <img src="/{{user.img}}" class="my-image">
+      {% else %}
+        <img alt="프로필 사진을 설정해주세요" src="/no-profile.png" class="my-image">
+      {% endif %}
+        <input id="img" type="file" name="img" accept="image/*" hidden>
+        <a type="submit" class="mini-btn update">수정</a>
+        <button type="submit" class="btn mini-btn submit" hidden>등록</button>
+      </form>
       <div class="right">
         <p><span class="user-name">{{user.nick}}</span>님의 정보</p>
         <div class="info-count">
@@ -30,37 +39,25 @@
 {% endblock %}
 {% block script %}
   <script>
-    // window.addEventListener('load', async () => {
-    //   try {
-    //     const result = await axios({
-    //       method: 'get',
-    //       url: `https://apis.data.go.kr/B551011/KorService/areaBasedList?serviceKey={{serviceKey}}&arrange=O&contentTypeId=12&areaCode=1&MobileOS=ETC&MobileApp=AppTest&_type=json&listYN=Y&arrange=C`,
-    //     })
-    //     console.log(result.data.response.body.items.item)
-    //     const regionTag = document.querySelector('.region') 
-    //     const titles = result.data.response.body.items.item
-    //     const resultTag = document.querySelector('.result');
-    //     const span = document.createElement('span')
-    //     span.innerText = ` ${titles.length}건`
-    //     regionTag.appendChild(span)
-    //     titles.forEach(el => {
-    //       const div = document.createElement('div')
-    //       const p = document.createElement('p');
-    //       const img = document.createElement('img')
-    //       p.innerText = el.title;
-    //       img.src = el.firstimage ? el.firstimage : ''
-    //       div.appendChild(img);
-    //       div.appendChild(p);
-    //       div.setAttribute('class', 'site')
-    //       div.addEventListener('click', () => {
-    //         location.replace(`/site/${el.contentid}`)
-    //       })
-    //       resultTag.appendChild(div);
-    //     });
+    const imgTag = document.querySelector('.info-box img');
+    const imgInput = document.querySelector('.info-box #img');
+    const imgUrlTag = document.querySelector('.info-box #img-url');
+    const updateBtn = document.querySelector('.info-box .update')
+    const submitBtn = document.querySelector('.info-box .submit')
+    updateBtn.addEventListener('click', () => {
+      imgInput.click()
+    })
 
-    //   } catch (error) {
-    //     console.error(error)
-    //   }
-    // })
+    if (imgInput) {
+      imgInput.addEventListener('change', async (e) => {
+        updateBtn.style.display = 'none'
+        submitBtn.style.display = 'block';
+        const imgUrl = URL.createObjectURL(imgInput.files[0]);
+        imgTag.src = imgUrl;
+        // const result = await axios.post('/mypage/image', formData);
+        // imgTag.src = `/${result.data.url}`;
+        // imgUrlTag.value = result.data.url;
+      });
+    }
   </script>
 {% endblock %}
