@@ -43,13 +43,13 @@ const upload = multer({
 });
 
 router.post(
-  '/user/:id/image',
+  '/user/image',
   isLoggedIn,
   upload.single('img'),
   async (req, res, next) => {
     try {
       const user = await User.findOne({
-        where: { id: req.params.id },
+        where: { id: req.user.id },
       });
       await user.update({
         img: req.file.filename,

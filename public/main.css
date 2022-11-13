@@ -388,7 +388,6 @@ form > :last-child {
   font-size: 1.2rem;
 }
 .result .site {
-  padding-top: 0.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -400,7 +399,7 @@ form > :last-child {
   font-size: var(--smallText);
 }
 .result img {
-  width: 15rem;
+  width: 100%;
   height: 10rem;
 }
 .site-page {

@@ -105,8 +105,10 @@
         const div = document.createElement('div')
         const nameTag = document.createElement('p');
         const addressTag = document.createElement('p');
-        const img = document.createElement('img')
-        nameTag.innerText = site.title;
+        const img = document.createElement('img');
+        const reg = /\([^)]+\)/
+        console.log(site)
+        nameTag.innerText = site.title.replace(reg, '')
         nameTag.setAttribute('class', 'name');
         addressTag.innerText = site.addr1;
         addressTag.setAttribute('class', 'address');

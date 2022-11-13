@@ -7,7 +7,7 @@
       <a class="quit">회원 탈퇴</a>
     </div>
     <div class="info-box">
-      <form enctype="multipart/form-data" action="/mypage/user/{{user.id}}/image" method="post">
+      <form enctype="multipart/form-data" action="/mypage/user/image" method="post">
       {% if user.img %}
         <img src="/{{user.img}}" class="my-image">
       {% else %}
@@ -35,6 +35,11 @@
         </div>
       </div>
     </div>
+    <div class="info-box">
+    {% for like in userLiked %}
+      <p>{{like.name}}</p>
+    {% endfor %}
+    </div>
   </div>
 {% endblock %}
 {% block script %}
@@ -54,9 +59,6 @@
         submitBtn.style.display = 'block';
         const imgUrl = URL.createObjectURL(imgInput.files[0]);
         imgTag.src = imgUrl;
-        // const result = await axios.post('/mypage/image', formData);
-        // imgTag.src = `/${result.data.url}`;
-        // imgUrlTag.value = result.data.url;
       });
     }
   </script>

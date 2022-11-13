@@ -29,7 +29,9 @@ router.get('/register', isNotLoggedIn, (req, res) => {
 });
 
 router.get('/mypage', isLoggedIn, (req, res) => {
-  res.render('mypage', { title: 'VISIT-KOREA || mypage' });
+  const userLiked = req.user.Liked;
+  console.log('----------', userLiked);
+  res.render('mypage', { title: 'VISIT-KOREA || mypage', userLiked });
 });
 
 router.get('/review', isLoggedIn, (req, res) => {

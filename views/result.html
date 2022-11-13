@@ -25,7 +25,8 @@
           const div = document.createElement('div')
           const p = document.createElement('p');
           const img = document.createElement('img')
-          p.innerText = el.title;
+          const reg = /\([^)]+\)/
+          p.innerText = el.title.replace(reg, '');
           img.src = el.firstimage ? el.firstimage : ''
           div.appendChild(img);
           div.appendChild(p);
