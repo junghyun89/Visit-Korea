@@ -156,11 +156,14 @@
             likeBtn.querySelector('.number').innerText = parseInt(likerNumber) - 1
           } else {
             const name = document.querySelector('.info .name').innerText
+            const address = document.querySelector('.info .address').innerText
+            console.log(address)
             await axios({
               method: 'post',
               url: `/site/${'{{id}}'}/like`,
               data: {
                 name,
+                address,
                 contentId: '{{id}}'
               }
             })
@@ -239,11 +242,14 @@
             zzimBtn.querySelector('.number').innerText = parseInt(zzimerNumber) - 1
           } else {
             const name = document.querySelector('.info .name').innerText
+            const address = document.querySelector('.info .address').innerText
+            console.log(address)
             await axios({
               method: 'post',
               url: `/site/${'{{id}}'}/zzim`,
               data: {
                 name,
+                address,
                 contentId: '{{id}}'
               }
             })
@@ -332,22 +338,12 @@
           method: 'get',
           url: `/site/{{id}}/review/${e.target.dataset.id}`,
         })
-        console.log(review.data.rate)
         starInput.value = review.data.rate / 10;
         star.style.width = `${starInput.value * 10}%`;
         reviewForm.querySelector('textarea').value = review.data.content;
         imgPreview.src = `/${review.data.img}`;
         reviewForm.querySelector('.submit-btn').innerText = '수정'
-        // imgUrlTag.value = review.img
         imgPreview.style.display = 'inline';
-        // if (confirm('삭제하시겠습니까?')) {
-        //   const name = document.querySelector('.info .name').innerText;
-        //   await axios({
-        //     method: 'delete',
-        //     url: `/site/{{id}}/review/${e.target.dataset.id}`,
-        //   })
-        //   location.replace('/site/{{id}}')
-        // } 
       } catch (error) {
         console.error(error)
       }

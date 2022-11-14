@@ -12,13 +12,15 @@ const router = express.Router();
 
 router.post('/:id/like', isLoggedIn, async (req, res, next) => {
   try {
+    const { name, contentId, address } = req.body;
     let site = await Site.findOne({
       where: { contentId: req.params.id },
     });
     if (!site) {
       site = await Site.create({
-        name: req.body.name,
-        contentId: req.body.contentId,
+        name,
+        address,
+        contentId,
       });
     }
     await site.addLiker(parseInt(req.user.id, 10));
@@ -44,15 +46,18 @@ router.delete('/:id/like', isLoggedIn, async (req, res, next) => {
 
 router.post('/:id/zzim', isLoggedIn, async (req, res, next) => {
   try {
+    const { name, contentId, address } = req.body;
     let site = await Site.findOne({
       where: { contentId: req.params.id },
     });
     if (!site) {
       site = await Site.create({
-        name: req.body.name,
-        contentId: req.body.contentId,
+        name,
+        contentId,
+        address,
       });
     }
+    console.log('-----site', site);
     await site.addZzimer(parseInt(req.user.id, 10));
     return res.send('success');
   } catch (error) {
@@ -91,7 +96,6 @@ router.post(
       const review = await Review.findOne({
         where: { SiteId: site.id, id: req.params.reviewId },
       });
-      console.log('------tttreview', review);
       await review.addUpuser(parseInt(req.user.id, 10));
       return res.send('success');
     } catch (error) {
@@ -160,7 +164,6 @@ router.post(
   async (req, res, next) => {
     try {
       const { content, rate, name, img } = req.body;
-      console.log('-----img', req.body);
       let site = await Site.findOne({
         where: { contentId: req.params.id },
       });
@@ -199,7 +202,6 @@ router.patch(
       const review = await Review.findOne({
         where: { ReviewerId: req.user.id, id: req.params.reviewId },
       });
-      console.log('-----review!', review);
       review.update({ content, img, rate });
       return res.send('ok');
     } catch (error) {

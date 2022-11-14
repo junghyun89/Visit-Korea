@@ -8,9 +8,9 @@ const router = express.Router();
 
 router.use((req, res, next) => {
   res.locals.user = req.user;
-  res.locals.myZzimCount = req.user ? req.user.Zzimed.length : 0;
-  res.locals.myLikeCount = req.user ? req.user.Liked.length : 0;
-  res.locals.myReviewCount = req.user ? req.user.Reviewed.length : 0;
+  // res.locals.myZzimCount = req.user ? req.user.Zzimed.length : 0;
+  // res.locals.myLikeCount = req.user ? req.user.Liked.length : 0;
+  // res.locals.myReviewCount = req.user ? req.user.Reviewed.length : 0;
   next();
 });
 
@@ -30,8 +30,15 @@ router.get('/register', isNotLoggedIn, (req, res) => {
 
 router.get('/mypage', isLoggedIn, (req, res) => {
   const userLiked = req.user.Liked;
-  console.log('----------', userLiked);
-  res.render('mypage', { title: 'VISIT-KOREA || mypage', userLiked });
+  const userZzimed = req.user.Zzimed;
+  const userReviewed = req.user.Reviewed;
+  console.log('----------', userReviewed);
+  res.render('mypage', {
+    title: 'VISIT-KOREA || mypage',
+    userLiked,
+    userZzimed,
+    userReviewed,
+  });
 });
 
 router.get('/review', isLoggedIn, (req, res) => {

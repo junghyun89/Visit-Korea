@@ -22,25 +22,52 @@
         <div class="info-count">
           <div>
             <span>좋아요</span>
-            <span>{{myLikeCount}}</span>
+            <span>{{userLiked.length}}</span>
           </div>
           <div>
             <span>찜한 여행</span>
-            <span>{{myZzimCount}}</span>
+            <span>{{userZzimed.length}}</span>
           </div>
           <div>
             <span>나의 리뷰</span>
-            <span>{{myReviewCount}}</span>
+            <span>{{userReviewed.length}}</span>
           </div>
         </div>
       </div>
     </div>
-    <div class="info-box">
-    {% for like in userLiked %}
-      <p>{{like.name}}</p>
-    {% endfor %}
+    <div class="box-wrapper">
+      <p style="font-size: 0.9rem;">좋아요</p>
+      <div class="like-box">
+        {% for like in userLiked %}
+          <div class="like-site" data-id="{{like.contentId}}">
+            <p>{{like.name}}</p>
+            <p>{{like.address}}</p>
+          </div>
+        {% endfor %}
+      </div>
     </div>
-  </div>
+    <div class="box-wrapper">
+      <p style="font-size: 0.9rem;">찜한 여행</p>
+      <div class="zzim-box">
+      {% for zzim in userZzimed %}
+        <div class="zzim-site" data-id="{{zzim.contentId}}">
+          <p>{{zzim.name}}</p>
+          <p>{{zzim.address}}</p>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+    <div class="box-wrapper">
+      <p style="font-size: 0.9rem;">나의 리뷰</p>
+      <div class="my-review-box">
+      {% for review in userReviewed %}
+        <div class="review-site" data-id="{{review.contentId}}">
+          <p>{{review.name}}</p>
+          <p>{{review.address}}</p>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
 {% endblock %}
 {% block script %}
   <script>
@@ -61,5 +88,18 @@
         imgTag.src = imgUrl;
       });
     }
+
+    const likeSite = document.querySelectorAll('.like-site');
+    likeSite.forEach((site) => {
+      site.addEventListener('click', () => {
+        location.replace(`/site/${site.dataset.id}`)
+      })
+    })
+    const zzimSite = document.querySelectorAll('.zzim-site');
+    zzimSite.forEach((site) => {
+      site.addEventListener('click', () => {
+        location.replace(`/site/${site.dataset.id}`)
+      })
+    })
   </script>
 {% endblock %}

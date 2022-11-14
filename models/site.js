@@ -12,6 +12,10 @@ module.exports = class Site extends Sequelize.Model {
           type: Sequelize.STRING(50),
           allowNull: false,
         },
+        address: {
+          type: Sequelize.STRING(150),
+          allowNull: true,
+        },
       },
       {
         sequelize,
