@@ -24,7 +24,7 @@ router.post('/:id/like', isLoggedIn, async (req, res, next) => {
       });
     }
     await site.addLiker(parseInt(req.user.id, 10));
-    return res.send('success');
+    return res.send('ok');
   } catch (error) {
     console.error(error);
     next(error);
@@ -37,7 +37,7 @@ router.delete('/:id/like', isLoggedIn, async (req, res, next) => {
       where: { contentId: req.params.id },
     });
     await site.removeLiker(parseInt(req.user.id, 10));
-    return res.send('success');
+    return res.send('ok');
   } catch (error) {
     console.error(error);
     next(error);
@@ -57,9 +57,8 @@ router.post('/:id/zzim', isLoggedIn, async (req, res, next) => {
         address,
       });
     }
-    console.log('-----site', site);
     await site.addZzimer(parseInt(req.user.id, 10));
-    return res.send('success');
+    return res.send('ok');
   } catch (error) {
     console.error(error);
     next(error);
@@ -72,7 +71,7 @@ router.delete('/:id/zzim', isLoggedIn, async (req, res, next) => {
       where: { contentId: req.params.id },
     });
     await site.removeZzimer(parseInt(req.user.id, 10));
-    return res.send('success');
+    return res.send('ok');
   } catch (error) {
     console.error(error);
     next(error);
@@ -84,20 +83,22 @@ router.post(
   isLoggedIn,
   async (req, res, next) => {
     try {
+      const { name, contentId, address } = req.body;
       let site = await Site.findOne({
         where: { contentId: req.params.id },
       });
       if (!site) {
         site = await Site.create({
-          name: req.body.name,
-          contentId: req.body.contentId,
+          name,
+          contentId,
+          address,
         });
       }
       const review = await Review.findOne({
         where: { SiteId: site.id, id: req.params.reviewId },
       });
       await review.addUpuser(parseInt(req.user.id, 10));
-      return res.send('success');
+      return res.send('ok');
     } catch (error) {
       console.error(error);
       next(error);
@@ -117,7 +118,7 @@ router.delete(
         where: { SiteId: site.id, id: req.params.reviewId },
       });
       await review.removeUpuser(parseInt(req.user.id, 10));
-      return res.send('success');
+      return res.send('ok');
     } catch (error) {
       console.error(error);
       next(error);
@@ -163,7 +164,7 @@ router.post(
   upload2.none(),
   async (req, res, next) => {
     try {
-      const { content, rate, name, img } = req.body;
+      const { content, rate, name, img, address } = req.body;
       let site = await Site.findOne({
         where: { contentId: req.params.id },
       });
@@ -171,6 +172,7 @@ router.post(
         site = await Site.create({
           name,
           contentId: req.params.id,
+          address,
         });
       }
       const exReview = await Review.findOne({

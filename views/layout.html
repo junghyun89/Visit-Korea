@@ -26,8 +26,6 @@
     <script>
       let scrollPrevious = window.pageYOffset;
       const navbar = document.querySelector('.nav-bar');
-      const ul = navbar.querySelector('ul');
-      const userIcon = navbar.querySelector('i')
   
       window.addEventListener('scroll', () => {
         const scrollCurrent = window.pageYOffset;
@@ -38,31 +36,6 @@
         }
         scrollPrevious = scrollCurrent;
       });
-
-      userIcon?.addEventListener('mouseover', () => {
-        ul.classList.add('show');
-      });
-      ul?.addEventListener('mouseleave', () => {
-        setTimeout(() => {
-          ul.classList.remove('show');
-        }, 200);
-      });
-      
-      const quitBtn = document.querySelector('.quit');
-      quitBtn?.addEventListener('click', async () => {
-        if (confirm(`회원 탈퇴 후 동일 이메일로 재가입할 수 없습니다. 탈퇴하시겠습니까?`)) {
-          await axios({
-            method: 'delete',
-            url: `/mypage/quit`,
-            data: {
-              email: '{{user.email}}',
-            }
-          })
-          location.replace('/')
-        } else {
-          location.reload()
-        }
-      })
     </script>
     {% block script %}
     {% endblock %}

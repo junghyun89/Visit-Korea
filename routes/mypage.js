@@ -51,6 +51,14 @@ router.post(
       const user = await User.findOne({
         where: { id: req.user.id },
       });
+      const imgFile = `uploads/${user.img}`;
+      if (fs.existsSync(imgFile)) {
+        try {
+          fs.unlinkSync(imgFile);
+        } catch (error) {
+          console.error(error);
+        }
+      }
       await user.update({
         img: req.file.filename,
       });

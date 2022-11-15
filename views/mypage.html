@@ -7,17 +7,7 @@
       <a class="quit">회원 탈퇴</a>
     </div>
     <div class="info-box">
-      <form enctype="multipart/form-data" action="/mypage/user/image" method="post">
-      {% if user.img %}
-        <img src="/{{user.img}}" class="my-image">
-      {% else %}
-        <img alt="프로필 사진을 설정해주세요" src="/no-profile.png" class="my-image">
-      {% endif %}
-        <input id="img" type="file" name="img" accept="image/*" hidden>
-        <a type="submit" class="mini-btn update">수정</a>
-        <button type="submit" class="btn mini-btn submit" hidden>등록</button>
-      </form>
-      <div class="right">
+      <div class="left">
         <p><span class="user-name">{{user.nick}}</span>님의 정보</p>
         <div class="info-count">
           <div>
@@ -30,16 +20,27 @@
           </div>
           <div>
             <span>나의 리뷰</span>
-            <span>{{userReviewed.length}}</span>
+            <span>{{reviews.length}}</span>
           </div>
         </div>
       </div>
+      <form enctype="multipart/form-data" action="/mypage/user/image" method="post">
+      {% if user.img %}
+        <img src="/{{user.img}}" class="my-image">
+      {% else %}
+        <img alt="프로필 사진을 설정해주세요" src="/no-profile.png" class="my-image">
+      {% endif %}
+        <input id="img" type="file" name="img" accept="image/*" hidden>
+        <a type="submit" class="mini-btn update">수정</a>
+        <button type="submit" class="btn mini-btn submit" hidden>등록</button>
+      </form>
     </div>
     <div class="box-wrapper">
-      <p style="font-size: 0.9rem;">좋아요</p>
+      <p class="box-title">▶ 좋아요</p>
       <div class="like-box">
         {% for like in userLiked %}
           <div class="like-site" data-id="{{like.contentId}}">
+            <img src="">
             <p>{{like.name}}</p>
             <p>{{like.address}}</p>
           </div>
@@ -47,10 +48,11 @@
       </div>
     </div>
     <div class="box-wrapper">
-      <p style="font-size: 0.9rem;">찜한 여행</p>
+      <p class="box-title">▶ 찜한 여행</p>
       <div class="zzim-box">
       {% for zzim in userZzimed %}
         <div class="zzim-site" data-id="{{zzim.contentId}}">
+          <img src="">
           <p>{{zzim.name}}</p>
           <p>{{zzim.address}}</p>
         </div>
@@ -58,12 +60,22 @@
       </div>
     </div>
     <div class="box-wrapper">
-      <p style="font-size: 0.9rem;">나의 리뷰</p>
+      <p class="box-title">▶ 나의 리뷰</p>
       <div class="my-review-box">
-      {% for review in userReviewed %}
-        <div class="review-site" data-id="{{review.contentId}}">
-          <p>{{review.name}}</p>
-          <p>{{review.address}}</p>
+      {% for review in reviews %}
+        <div class="review-site" data-id="{{review.Site.contentId}}">
+          <img src="" class="site-info">
+          <div class="site-info">
+            <p>{{review.Site.name}}</p>
+            <span class="star">
+              ★★★★★
+              <span style="width: {{review.rate}}%;">★★★★★</span>
+            </span>
+          </div>
+          <div class="review-text">
+            <p><span class="title">[나의 리뷰] </span>{{review.content}}</p>
+            <i class="fa-solid fa-xmark" data-id="{{review.id}}"></i>
+          </div>
         </div>
       {% endfor %}
       </div>
@@ -76,6 +88,24 @@
     const imgUrlTag = document.querySelector('.info-box #img-url');
     const updateBtn = document.querySelector('.info-box .update')
     const submitBtn = document.querySelector('.info-box .submit')
+    const siteImgs = document.querySelectorAll('.box-wrapper img')
+
+    window.addEventListener('load', () => {
+      try {
+        siteImgs.forEach(async (tag) => {
+          const result = await axios({
+            method: 'get',
+            url: `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey={{serviceKey}}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId=${tag.parentElement.dataset.id}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`,
+          })
+          const site = result.data.response.body.items.item[0]
+          tag.src = site.firstimage
+        })
+        
+      } catch (error) {
+        console.error(error)
+      }
+    })
+
     updateBtn.addEventListener('click', () => {
       imgInput.click()
     })
@@ -88,17 +118,46 @@
         imgTag.src = imgUrl;
       });
     }
+    const changePage = (id) => {
+      location.replace(id)
+    }
 
     const likeSite = document.querySelectorAll('.like-site');
     likeSite.forEach((site) => {
       site.addEventListener('click', () => {
-        location.replace(`/site/${site.dataset.id}`)
+        changePage(`/site/${site.dataset.id}`)
       })
     })
+
     const zzimSite = document.querySelectorAll('.zzim-site');
     zzimSite.forEach((site) => {
       site.addEventListener('click', () => {
-        location.replace(`/site/${site.dataset.id}`)
+        changePage(`/site/${site.dataset.id}`)
+      })
+    })
+
+    const reviewSite = document.querySelectorAll('.site-info');
+    reviewSite.forEach((site) => {
+      site.addEventListener('click', () => {
+        changePage(`/site/${site.parentElement.dataset.id}`)
+      })
+    })
+
+    const deleteIcons = document.querySelectorAll('.review-text i');
+    deleteIcons.forEach((icon) => {
+      icon.addEventListener('click', async (e) => {
+        try {
+          if (confirm('삭제하시겠습니까?')) {
+            const contentId = e.target.parentElement.parentElement.dataset.id
+            await axios({
+              method: 'delete',
+              url: `/site/${contentId}/review/${e.target.dataset.id}`,
+            })
+            location.replace('/mypage')
+          } 
+        } catch (error) {
+          console.error(error)
+        }
       })
     })
   </script>

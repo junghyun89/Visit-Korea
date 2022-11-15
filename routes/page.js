@@ -8,9 +8,6 @@ const router = express.Router();
 
 router.use((req, res, next) => {
   res.locals.user = req.user;
-  // res.locals.myZzimCount = req.user ? req.user.Zzimed.length : 0;
-  // res.locals.myLikeCount = req.user ? req.user.Liked.length : 0;
-  // res.locals.myReviewCount = req.user ? req.user.Reviewed.length : 0;
   next();
 });
 
@@ -28,16 +25,19 @@ router.get('/register', isNotLoggedIn, (req, res) => {
   res.render('register', { title: 'VISIT-KOREA || register' });
 });
 
-router.get('/mypage', isLoggedIn, (req, res) => {
+router.get('/mypage', isLoggedIn, async (req, res) => {
   const userLiked = req.user.Liked;
   const userZzimed = req.user.Zzimed;
-  const userReviewed = req.user.Reviewed;
-  console.log('----------', userReviewed);
+  const reviews = await Review.findAll({
+    where: { ReviewerId: req.user.id },
+    include: { model: Site },
+  });
   res.render('mypage', {
     title: 'VISIT-KOREA || mypage',
     userLiked,
     userZzimed,
-    userReviewed,
+    reviews,
+    serviceKey: process.env.SERVICE_KEY,
   });
 });
 
@@ -70,7 +70,6 @@ router.get('/site/:id', async (req, res, next) => {
           model: User,
           as: 'Zzimer',
         },
-        { model: Review },
       ],
     });
     const reviews = site
@@ -79,7 +78,6 @@ router.get('/site/:id', async (req, res, next) => {
           include: [
             { model: User, as: 'Reviewer' },
             { model: User, as: 'Upuser' },
-            { model: Site },
           ],
         })
       : [];
@@ -92,10 +90,10 @@ router.get('/site/:id', async (req, res, next) => {
     const thumbsList =
       req.user && req.user.Uped ? req.user.Uped.map((l) => l.id) : [];
 
-    const liked = likeList.indexOf(req.params.id) !== -1 ? 'liked' : 'unliked';
+    const liked = likeList.indexOf(req.params.id) !== -1 ? 'checked' : 'unchecked';
     const likerCount = site ? site.Liker.length : 0;
     const zzimed =
-      zzimList.indexOf(req.params.id) !== -1 ? 'zzimed' : 'unzzimed';
+      zzimList.indexOf(req.params.id) !== -1 ? 'checked' : 'unchecked';
     const zzimerCount = site ? site.Zzimer.length : 0;
     res.render('site', {
       title: `VISIT-KOREA || site: ${req.params.id}`,

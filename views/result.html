@@ -19,9 +19,8 @@
         const titles = result.data.response.body.items.item
         const resultTag = document.querySelector('.result');
         const span = document.createElement('span')
-        span.innerText = ` ${titles.length}건`
-        regionTag.appendChild(span)
         titles.forEach(el => {
+          if (!el.firstimage) return
           const div = document.createElement('div')
           const p = document.createElement('p');
           const img = document.createElement('img')
@@ -35,6 +34,8 @@
             location.replace(`/site/${el.contentid}`)
           })
           resultTag.appendChild(div);
+          span.innerText = ` ${resultTag.childElementCount}건`
+          regionTag.appendChild(span)
         });
 
       } catch (error) {

@@ -88,7 +88,6 @@
       document.querySelectorAll('.thumbs-up').forEach((el) => {
         upList.push(el.id.substr(3))
       })
-      console.log(upList)
       upList.forEach((el) => {
         if (reviewBox.dataset.thumbs.indexOf(el) !== -1) {
           document.querySelector(`#id-${el} i`).classList.add('liked')
@@ -100,6 +99,7 @@
           method: 'get',
           url: `https://apis.data.go.kr/B551011/KorService/detailCommon?serviceKey={{serviceKey}}&MobileOS=ETC&MobileApp=AppTest&_type=json&contentId={{id}}&contentTypeId=12&defaultYN=Y&firstImageYN=Y&areacodeYN=Y&catcodeYN=Y&addrinfoYN=Y&mapinfoYN=Y&overviewYN=Y`,
         })
+
         const infoTag = document.querySelector('.info');
         const site = result.data.response.body.items.item[0]
         const div = document.createElement('div')
@@ -107,7 +107,6 @@
         const addressTag = document.createElement('p');
         const img = document.createElement('img');
         const reg = /\([^)]+\)/
-        console.log(site)
         nameTag.innerText = site.title.replace(reg, '')
         nameTag.setAttribute('class', 'name');
         addressTag.innerText = site.addr1;
@@ -137,46 +136,50 @@
       }
     })
 
-    const likeBtn = document.querySelector('.like');
-    likeBtn.addEventListener('click', async () => {
-      try {
-        if (!'{{user}}') {
-          if (confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
-            return location.replace('/login')
-          } 
+    const addMySite = async (btn, type) => {
+      const icon = btn.querySelector('i')
+      const number = btn.querySelector('.number')
+      if (!'{{user}}') {
+        if (confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
+          return location.replace('/login')
+        } 
+      } else {
+        const clickedNumber = number.innerText
+        if (icon.classList.contains('checked')) {
+          await axios({
+            method: 'delete',
+            url: `/site/${'{{id}}'}/${type}`,
+          })
+          icon.classList.remove('checked')
+          icon.classList.add('unchecked')
+          number.innerText = parseInt(clickedNumber) - 1
         } else {
-          const likerNumber = likeBtn.querySelector('.number').innerText
-          if (likeBtn.querySelector('i').classList.contains('liked')) {
-            await axios({
-              method: 'delete',
-              url: `/site/${'{{id}}'}/like`,
-            })
-            likeBtn.querySelector('i').classList.remove('liked')
-            likeBtn.querySelector('i').classList.add('unliked')
-            likeBtn.querySelector('.number').innerText = parseInt(likerNumber) - 1
-          } else {
-            const name = document.querySelector('.info .name').innerText
-            const address = document.querySelector('.info .address').innerText
-            console.log(address)
-            await axios({
-              method: 'post',
-              url: `/site/${'{{id}}'}/like`,
-              data: {
-                name,
-                address,
-                contentId: '{{id}}'
-              }
-            })
-            likeBtn.querySelector('i').classList.remove('unliked')
-            likeBtn.querySelector('i').classList.add('liked')
-            likeBtn.querySelector('.number').innerText = parseInt(likerNumber) + 1
-          }
+          const name = document.querySelector('.info .name').innerText
+          const address = document.querySelector('.info .address').innerText
+          await axios({
+            method: 'post',
+            url: `/site/${'{{id}}'}/${type}`,
+            data: {
+              name,
+              address,
+              contentId: '{{id}}'
+            }
+          })
+          icon.classList.remove('unchecked')
+          icon.classList.add('checked')
+          number.innerText = parseInt(clickedNumber) + 1
         }
+      }
+    }
+    
+    const likeBtn = document.querySelector('.like');
+    likeBtn.addEventListener('click', () => {
+      try {
+        addMySite(likeBtn, 'like')
       } catch (error) {
         console.error(error)
       }
     })
-
 
     const thumbsBtns = document.querySelectorAll('.thumbs-up a');
     thumbsBtns.forEach((btn) => {
@@ -188,11 +191,10 @@
             return location.replace('/login')
           } 
         } else {
-          console.log(btnParent)
           const likerNumber = btnParent.querySelector('.number').innerText
           const reviewId = btn.dataset.id
+          const address = document.querySelector('.info .address').innerText
           if (btnParent.querySelector('i').classList.contains('liked')) {
-            console.log('delete')
             await axios({
               method: 'delete',
               url: `/site/${'{{id}}'}/review/${reviewId}/thumbsup`,
@@ -209,6 +211,7 @@
               data: {
                 name,
                 contentId: '{{id}}',
+                address
               }
             })
             btn.innerText = '추천 취소'
@@ -224,45 +227,14 @@
     })
 
     const zzimBtn = document.querySelector('.zzim');
-    zzimBtn.addEventListener('click', async () => {
+    zzimBtn.addEventListener('click', () => {
       try {
-        if (!'{{user}}') {
-          if (confirm('로그인이 필요합니다. 로그인 페이지로 이동하시겠습니까?')) {
-            return location.replace('/login')
-          } 
-        } else {
-          const zzimerNumber = zzimBtn.querySelector('.number').innerText
-          if (zzimBtn.querySelector('i').classList.contains('zzimed')) {
-            await axios({
-              method: 'delete',
-              url: `/site/${'{{id}}'}/zzim`,
-            })
-            zzimBtn.querySelector('i').classList.remove('zzimed')
-            zzimBtn.querySelector('i').classList.add('unzzimed')
-            zzimBtn.querySelector('.number').innerText = parseInt(zzimerNumber) - 1
-          } else {
-            const name = document.querySelector('.info .name').innerText
-            const address = document.querySelector('.info .address').innerText
-            console.log(address)
-            await axios({
-              method: 'post',
-              url: `/site/${'{{id}}'}/zzim`,
-              data: {
-                name,
-                address,
-                contentId: '{{id}}'
-              }
-            })
-            zzimBtn.querySelector('i').classList.remove('unzzimed')
-            zzimBtn.querySelector('i').classList.add('zzimed')
-            zzimBtn.querySelector('.number').innerText = parseInt(zzimerNumber) + 1
-          }
-        }
+        addMySite(zzimBtn, 'zzim')
       } catch (error) {
         console.error(error)
       }
     })
-
+    
     const addReviewBtn = document.querySelector('.add-review');
     const reviewWrapper = document.querySelector('.review-form');
     const formBox = document.querySelector('.form-box')
@@ -283,7 +255,7 @@
       if (!formBox.contains(e.target)) {
         reviewWrapper.classList.add('hide');
         starInput.value = 0;
-        star.style.width = `${starInput.value * 10}%`;
+        star.style.width = `${starInput.value}%`;
         reviewForm.querySelector('textarea').value = '';
         imgPreview.src = '';
         imgPreview.style.display = 'none';
@@ -307,46 +279,48 @@
       tag.innerText = `${year}.${month}.${date}`
     })
 
-    const deleteBtn = document.querySelector('.mini-btn.delete')
-    deleteBtn?.addEventListener('click', async (e) => {
-      try {
-        if (confirm('삭제하시겠습니까?')) {
-          const name = document.querySelector('.info .name').innerText;
-          await axios({
-            method: 'delete',
-            url: `/site/{{id}}/review/${e.target.dataset.id}`,
-          })
-          location.replace('/site/{{id}}')
-        } 
-      } catch (error) {
-        console.error(error)
-      }
+    const deleteBtns = document.querySelectorAll('.mini-btn.delete')
+    deleteBtns.forEach((btn) => {
+      btn.addEventListener('click', async (e) => {
+        try {
+          if (confirm('삭제하시겠습니까?')) {
+            await axios({
+              method: 'delete',
+              url: `/site/{{id}}/review/${e.target.dataset.id}`,
+            })
+            location.replace('/site/{{id}}')
+          } 
+        } catch (error) {
+          console.error(error)
+        }
+      })
     })
 
-    const updateBtn = document.querySelector('.mini-btn.update')
-    updateBtn?.addEventListener('click', async (e) => {
-      try {
-        reviewWrapper.classList.remove('hide');
-        window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
-        document.querySelectorAll('.head-box').forEach((box) => {
-          box.querySelectorAll('.fa-solid').forEach(icon => {
-            icon.style.display = 'none'
-          });
-          box.style.position = 'static'
-        })
-        const review = await axios({
-          method: 'get',
-          url: `/site/{{id}}/review/${e.target.dataset.id}`,
-        })
-        starInput.value = review.data.rate / 10;
-        star.style.width = `${starInput.value * 10}%`;
-        reviewForm.querySelector('textarea').value = review.data.content;
-        imgPreview.src = `/${review.data.img}`;
-        reviewForm.querySelector('.submit-btn').innerText = '수정'
-        imgPreview.style.display = 'inline';
-      } catch (error) {
-        console.error(error)
-      }
-    })
+    const updateBtns = document.querySelectorAll('.mini-btn.update');
+    updateBtns.forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        try {
+          reviewWrapper.classList.remove('hide');
+          window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
+          document.querySelectorAll('.head-box').forEach((box) => {
+            box.querySelectorAll('.fa-solid').forEach(icon => {
+              icon.style.display = 'none'
+            });
+            box.style.position = 'static'
+          })
+          const review = await axios({
+            method: 'get',
+            url: `/site/{{id}}/review/${e.target.dataset.id}`,
+          })
+          star.style.width = `${review.data.rate}%`;
+          reviewForm.querySelector('textarea').value = review.data.content;
+          imgPreview.src = `/${review.data.img}`;
+          reviewForm.querySelector('.submit-btn').innerText = '수정'
+          imgPreview.style.display = 'inline';
+        } catch (error) {
+          console.error(error)
+        }
+      })
+    }); 
   </script>
 {% endblock %}

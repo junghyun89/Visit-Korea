@@ -35,7 +35,6 @@
           <img id="img-preview" src="" style="display: none" width="150" alt="미리보기">
           <input id="img-url" type="hidden" name="url">
         </div>
-
         <button type="submit" class="btn submit-btn">등록</button>
       </form>
     </div>
@@ -84,6 +83,8 @@
             }
           })
         } else {
+          const name = document.querySelector('.info .name').innerText
+          const address = document.querySelector('.info .address').innerText
           await axios({
             method: 'post',
             url: `/site/{{id}}/review`,
@@ -92,6 +93,7 @@
               rate: starInput.value * 10,
               img: imgUrlTag.value,
               name,
+              address
             }
           })
         }
