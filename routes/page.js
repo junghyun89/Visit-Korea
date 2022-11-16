@@ -46,7 +46,7 @@ router.get('/review', isLoggedIn, (req, res) => {
 });
 
 router.post('/search', (req, res) => {
-  res.redirect(`result/${req.body.region}`);
+  res.redirect(`result/${req.body.region}?pageNum=1`);
 });
 
 router.get('/result/:region', async (req, res) => {
@@ -54,6 +54,7 @@ router.get('/result/:region', async (req, res) => {
     title: 'VISIT-KOREA || result',
     region: req.params.region,
     serviceKey: process.env.SERVICE_KEY,
+    pageNum: req.query.pageNum,
   });
 });
 
@@ -90,7 +91,8 @@ router.get('/site/:id', async (req, res, next) => {
     const thumbsList =
       req.user && req.user.Uped ? req.user.Uped.map((l) => l.id) : [];
 
-    const liked = likeList.indexOf(req.params.id) !== -1 ? 'checked' : 'unchecked';
+    const liked =
+      likeList.indexOf(req.params.id) !== -1 ? 'checked' : 'unchecked';
     const likerCount = site ? site.Liker.length : 0;
     const zzimed =
       zzimList.indexOf(req.params.id) !== -1 ? 'checked' : 'unchecked';

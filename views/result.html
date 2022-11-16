@@ -2,10 +2,12 @@
 
 {% block content %}
   <div class="result-page">
-    <p class="title"><span>{{region}}</span> 검색결과</p>
+    <p class="title"><span>{{region}}</span> 검색결과 <span class="result-length"></span></p>
     <div class="result">
     </div>
+    {% include "pagination.html" %}
   </div>
+
 {% endblock %}
 {% block script %}
   <script>
@@ -13,12 +15,13 @@
       try {
         const result = await axios({
           method: 'get',
-          url: `https://apis.data.go.kr/B551011/KorService/searchKeyword?serviceKey={{serviceKey}}&numOfRows=50&pageNo=1&MobileOS=ETC&MobileApp=visitKorea&_type=json&contentTypeId=12&listYN=Y&arrange=Q&keyword={{region}}`,
+          url: `https://apis.data.go.kr/B551011/KorService/searchKeyword?serviceKey={{serviceKey}}&numOfRows=10&pageNo={{pageNum}}&MobileOS=ETC&MobileApp=visitKorea&_type=json&contentTypeId=12&listYN=Y&arrange=Q&keyword={{region}}`,
         })
         const regionTag = document.querySelector('.title') 
         const titles = result.data.response.body.items.item
+        const resultLength = result.data.response.body.totalCount
         const resultTag = document.querySelector('.result');
-        const span = document.createElement('span')
+        const span = document.querySelector('.title .result-length')
         titles.forEach(el => {
           if (!el.firstimage) return
           const div = document.createElement('div')
@@ -34,10 +37,8 @@
             location.replace(`/site/${el.contentid}`)
           })
           resultTag.appendChild(div);
-          span.innerText = ` ${resultTag.childElementCount}건`
-          regionTag.appendChild(span)
+          span.innerText = ` ${resultLength}건`
         });
-
       } catch (error) {
         console.error(error)
       }

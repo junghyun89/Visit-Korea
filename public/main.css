@@ -262,6 +262,7 @@ textarea {
   margin-top: 0.6rem;
   border-radius: 0;
 }
+
 @media screen and (min-width: 576px) {
   form {
     display: flex;
@@ -287,7 +288,7 @@ form > :last-child {
   border-radius: var(--borderRadius);
 }
 
-.alert-success {
+/* .alert-success {
   color: var(--green-dark);
   background-color: var(--green-light);
 }
@@ -297,7 +298,7 @@ form > :last-child {
 }
 .error-page {
   margin: 2rem;
-}
+} */
 .main {
   margin-top: 5rem;
   padding: 0 1rem;
@@ -378,9 +379,15 @@ form > :last-child {
   height: calc(100vh - 75px);
   padding: 0 2rem;
 }
+.result-page {
+  text-align: center;
+}
 .result-page .title,
 .mypage .title, .box-wrapper .title {
   font-weight: 600;
+}
+.result-page .title {
+  text-align: start;
 }
 .result-page .title span:first-of-type {
   color: var(--primary-500);
@@ -573,7 +580,6 @@ form > :last-child {
   margin-top: 2.5rem;
 }
 .mypage .box-wrapper .box-title {
-  /* color: var(--primary-500); */
   font-size: 0.8rem;
   font-weight: 600;
 }
@@ -754,78 +760,58 @@ form > :last-child {
 }
 
 /*************
-    SINGLE JOB
+    PAGINATION
 *************/
-.single-job {
-  /* max-width: 20rem; */
-  background: var(--white);
-  border-radius: var(--borderRadius);
-  box-shadow: var(--shadow-2);
-  transition: var(--transition);
+.pagination {
+  /* width: 100%; */
+  margin: 0 auto;
+  display: inline-block;
+}
+.pagination ul {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin: 2rem 0.7rem;
+  justify-content: center;
+  background: #fff;
+  padding: 8px;
+  border-radius: 50px;
+  /* width: 100%; */
+  /* margin: 0 auto; */
 }
-.single-job:hover {
-  box-shadow: var(--shadow-4);
-}
-.single-job .date {
-  margin: 0;
-  align-self: flex-end;
-  padding: 0.4rem;
-  background-color: var(--primary-100);
-  color: var(--primary-700);
+.pagination ul li {
+  color: var(--primary-500);
+  list-style: none;
+  line-height: 35px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
   font-size: var(--smallText);
-  border-radius: 0 var(--borderRadius) 0 var(--borderRadius);
 }
-.single-job .job-info {
-  margin-left: 1rem;
+.pagination .button {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  margin: 0 3px;
 }
-.single-job .job-info .position {
-  font-weight: 600;
-  margin: 0;
+.pagination .btn {
+  padding: 0 20px;
 }
-.single-job .job-info .company {
-  display: inline;
-  padding: 0.2rem 0.4rem;
-  background-color: var(--primary-100);
-  color: var(--primary-700);
-  border-radius: var(--borderRadius);
-  font-size: 0.8rem;
+.pagination .prev {
+  border-radius: 25px 5px 5px 25px;
 }
-.single-job .bottom {
-  font-size: 0.8rem;
-  font-weight: 600;
-  margin: 1.2rem 1rem 0.6rem 1rem;
-  display: flex;
-  justify-content: space-between;
+.pagination .next {
+  border-radius: 5px 25px 25px 5px;
 }
-.single-job .bottom .left {
-  display: flex;
-  gap: 0.5rem;
+.pagination ul li.active,
+.pagination .numb:hover,
+.pagination .btn:hover,
+.pagination .prev,
+.pagination .next {
+  background: var(--primary-500);
+  color: #fff;
 }
-.single-job .bottom .edit {
-  cursor: pointer;
-  color: var(--green-dark);
-}
-.single-job .bottom .delete {
-  cursor: pointer;
-  color: var(--red-dark);
-}
-.single-job .bottom .status {
-  margin: 0;
-  text-transform: uppercase;
-  color: var(--primary-700);
-}
-.loading-text {
-  visibility: hidden;
-}
+
 @media screen and (min-width: 780px) {
-  .single-jobs {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-  }
   .result, .like-box, .zzim-box, .my-review-box {
     width: 100%;
     display: grid;

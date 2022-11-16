@@ -1,0 +1,159 @@
+{% block content %}
+  <div class="pagination">
+    <div class="buttons"></div>
+  </div>
+{% endblock %}
+{% block script %}
+  <script>
+    const buttons = document.querySelector(".buttons");
+    
+    let totalPages;
+    const maxButton = 5
+    let page = 1
+    
+    window.addEventListener('load', async () => {
+      const result = await axios({
+        method: 'get',
+        url: `https://apis.data.go.kr/B551011/KorService/searchKeyword?serviceKey={{serviceKey}}&numOfRows=10&pageNo={{pageNum}}&MobileOS=ETC&MobileApp=visitKorea&_type=json&contentTypeId=12&listYN=Y&arrange=Q&keyword={{region}}`,
+      })
+      totalPages = parseInt(result.data.response.body.totalCount / 5) + 1
+      element(totalPages, 1);
+
+      const btns = document.querySelectorAll('.pagination li');
+      btns.forEach((btn) => {
+        console.log(btn.querySelector('span').innerText == 1)
+        if (btn.querySelector('span').innerText == '{{pageNum}}') {
+          btn.classList.add('active')
+        }
+      })
+      btns.forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          try {
+            let pageNum;
+
+            if (btn.querySelector('span').textContent.includes('Next')) {
+              pageNum = parseInt('{{pageNum}}') + 1
+            } else if (btn.querySelector('span').textContent.includes('Prev')) {
+              pageNum = parseInt('{{pageNum}}') - 1
+            } else {
+              pageNum = e.target.innerText
+            }
+            location.replace(`/result/{{region}}?pageNum=${pageNum}`)
+          } catch (error) {
+            console.error(error)
+          }
+        })
+      });
+    })
+
+    const makeButton = (id) => {
+      const button = document.createElement('button');
+      button.classList.add('button');
+      button.dataset.num = id;
+      button.innerText = id;
+      button.addEventListener('click', (e) => {
+        Array.prototype.forEach.call(buttons.children, (button) => {
+          if (button.dataset.num) button.classList.remove('active')
+        });
+        e.target.classList.add('active');
+        location.replace(`/result/{{region}}?pageNum=${id}`)
+      })
+    }
+
+    const renderButton = (page) => {
+      while (buttons.hasChildNodes()) {
+        buttons.removeChild(buttons.lastChild)
+      };
+
+      for (let id = page; id < page + maxButton; id++) {
+        buttons.appendChild(makeButton(id));
+      }
+      buttons.children[0].classList.add('active');
+      buttons.prepend(prev);
+      buttons.append(next)
+
+      if (page - maxButton < 1) buttons.removeChild(prev);
+      if (page + maxButton * 10 > totalPages) buttons.removeChild(next)
+    }
+    renderButton(page)
+
+    const goPrevPage = () => {
+      page -= maxButton;
+      render(page);
+    };
+
+    const goNextPage = () => {
+      page += maxButton;
+      render(page);
+    };
+
+    const prev = document.createElement("button");
+    prev.classList.add("button", "prev");
+    prev.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+    prev.addEventListener("click", goPrevPage);
+
+    const next = document.createElement("button");
+    next.classList.add("button", "next");
+    next.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+    next.addEventListener("click", goNextPage);
+
+    // function element(totalPages, page) {
+    //   let liTag = '';
+    //   let beforePages = page - 1;
+    //   let afterPages = page + 1;
+
+    //   if (page > 1) {
+    //     liTag += `<li class="btn prev" onclick='element(totalPages, ${
+    //       page - 1
+    //     })'><span><i class="fas fa-angle-left"></i> Prev</span></li>`;
+    //   }
+    //   if (page > 2) {
+    //     liTag += `<li class="numb" onclick='element(totalPages, 1)'><span>1</span></li>`;
+    //     if (page > 3) {
+    //       liTag += `<li class="dots"><span>...</span></li>`;
+    //     }
+    //   }
+
+    //   // before the current li
+    //   if (page == totalPages) {
+    //     beforePages = beforePages - 2;
+    //   } else if (page == totalPages - 1) {
+    //     beforePages = beforePages - 1;
+    //   }
+
+    //   // after the current li
+    //   if (page == 1) {
+    //     afterPages = afterPages + 2;
+    //   } else if (page == 2) {
+    //     afterPages = afterPages + 1;
+    //   }
+
+    //   for (let pageLength = beforePages; pageLength <= afterPages; pageLength++) {
+    //     if (pageLength > totalPages) {
+    //       continue;
+    //     }
+    //     if (pageLength == 0) {
+    //       pageLength = pageLength + 1;
+    //     }
+    //     liTag += `<li class="numb" onclick='element(totalPages, ${pageLength})'><span>${pageLength}</span></li>`;
+    //   }
+
+    //   if (page < totalPages - 1) {
+    //     if (page < totalPages - 2) {
+    //       liTag += `<li class="dots"><span>...</span></li>`;
+    //     }
+    //     liTag += `<li class="numb" onclick='element(totalPages, ${totalPages})'><span>${totalPages}</span></li>`;
+    //   }
+
+    //   if (page < totalPages) {
+    //     liTag += `<li class="btn next" onclick='element(totalPages, ${
+    //       page + 1
+    //     })'><span>Next <i class="fas fa-angle-right"></i></span></li>`;
+    //   }
+    //   ulTag.innerHTML = liTag;
+    // }
+  </script>
+{% endblock %}
+
+
+
