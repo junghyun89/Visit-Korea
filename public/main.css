@@ -764,7 +764,7 @@ form > :last-child {
 *************/
 .pagination {
   /* width: 100%; */
-  margin: 0 auto;
+  margin: 2rem auto;
   display: inline-block;
 }
 .pagination ul {
@@ -772,13 +772,14 @@ form > :last-child {
   justify-content: center;
   background: #fff;
   padding: 8px;
-  border-radius: 50px;
+  /* border-radius: 50px; */
   /* width: 100%; */
   /* margin: 0 auto; */
 }
-.pagination ul li {
+.pagination .button {
   color: var(--primary-500);
-  list-style: none;
+  height: 35px;
+  width: 35px;
   line-height: 35px;
   text-align: center;
   font-size: 18px;
@@ -786,27 +787,20 @@ form > :last-child {
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: var(--smallText);
-}
-.pagination .button {
-  height: 35px;
-  width: 35px;
-  border-radius: 50%;
   margin: 0 3px;
+  border: none;
 }
 .pagination .btn {
   padding: 0 20px;
 }
-.pagination .prev {
+/* .pagination .prev {
   border-radius: 25px 5px 5px 25px;
 }
 .pagination .next {
   border-radius: 5px 25px 25px 5px;
-}
-.pagination ul li.active,
-.pagination .numb:hover,
-.pagination .btn:hover,
-.pagination .prev,
-.pagination .next {
+} */
+.pagination .button.active,
+.pagination .button:hover {
   background: var(--primary-500);
   color: #fff;
 }
