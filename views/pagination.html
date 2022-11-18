@@ -6,9 +6,11 @@
 {% block script %}
   <script>
     const buttons = document.querySelector(".buttons");
+    const lengthTag = document.querySelector('.title .result-length')
     
     let totalPages;
     const maxButton = 5
+    const maxNum = 10
     let pageNum = parseInt('{{pageNum}}')
     let firstButtonNum = (parseInt((pageNum - 1) / maxButton) * maxButton) + 1
 
@@ -37,9 +39,8 @@
 
     const goNextPage = () => {
       firstButtonNum += maxButton;
-      pageNum = firstButtonNum
-      renderButton(pageNum);
-      location.replace(`/result/{{region}}?pageNum=${pageNum}`)
+      renderButton(firstButtonNum);
+      location.replace(`/result/{{region}}?pageNum=${firstButtonNum}`)
       renderButton(pageNum)
     };
 
@@ -69,25 +70,27 @@
     }
 
     window.addEventListener('load', async () => {
-      const totalCount = await axios({
+      const resultTotal = await axios({
         method: 'get',
-        url: `https://apis.data.go.kr/B551011/KorService/searchKeyword?serviceKey={{serviceKey}}&numOfRows=10&pageNo=1&MobileOS=ETC&MobileApp=visitKorea&_type=json&contentTypeId=12&listYN=N&arrange=Q&keyword={{region}}`,
+        url: `https://apis.data.go.kr/B551011/KorService/searchKeyword?serviceKey={{serviceKey}}&numOfRows=${maxNum}&pageNo=1&MobileOS=ETC&MobileApp=visitKorea&_type=json&contentTypeId=12&listYN=N&arrange=Q&keyword={{region}}`,
       })
+      const totalCount = resultTotal.data.response.body.items.item[0].totalCnt
       const result = await axios({
         method: 'get',
-        url: `https://apis.data.go.kr/B551011/KorService/searchKeyword?serviceKey={{serviceKey}}&numOfRows=${totalCount.data.response.body.totalCount}&pageNo=1&MobileOS=ETC&MobileApp=visitKorea&_type=json&contentTypeId=12&listYN=Y&arrange=Q&keyword={{region}}`,
+        url: `https://apis.data.go.kr/B551011/KorService/searchKeyword?serviceKey={{serviceKey}}&numOfRows=${totalCount}&pageNo=1&MobileOS=ETC&MobileApp=visitKorea&_type=json&contentTypeId=12&listYN=Y&arrange=Q&keyword={{region}}`,
       })
-      console.log('----total', totalCount.data.response.body.items.item[0].totalCount)
       const titles = result.data.response.body.items.item;
-      console.log('---leng', titles.length)
       let filteredCount = [];
       titles.forEach((el) => {
         if (!el.firstimage) return
         filteredCount.push(el)
       })
-      console.log('---filtered',filteredCount.length)
-      totalPages = parseInt(result.data.response.body.totalCount / 10) + 1
-      console.log(totalPages)
+      if (filteredCount.length % maxNum === 0) {
+        totalPages = parseInt(filteredCount.length / maxNum)
+      } else {
+        totalPages = parseInt(filteredCount.length / maxNum) + 1
+      }
+      lengthTag.innerText = ` ${filteredCount.length}건`
       renderButton(pageNum)
       
       const btns = document.querySelectorAll('.pagination .button');

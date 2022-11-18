@@ -19,9 +19,7 @@
         })
         const regionTag = document.querySelector('.title') 
         const titles = result.data.response.body.items.item
-        const resultLength = result.data.response.body.totalCount
         const resultTag = document.querySelector('.result');
-        const span = document.querySelector('.title .result-length')
         titles.forEach(el => {
           if (!el.firstimage) return
           const div = document.createElement('div')
@@ -37,9 +35,7 @@
             location.replace(`/site/${el.contentid}`)
           })
           resultTag.appendChild(div);
-          span.innerText = ` ${resultLength}건`
         });
-        console.log('---after', titles.length)
       } catch (error) {
         console.error(error)
       }
